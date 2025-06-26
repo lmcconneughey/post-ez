@@ -1,6 +1,7 @@
 import { Image } from "@imagekit/next";
 import ImageComponent from "./image";
 import PostInfo from "./post-info";
+import PostInteractions from "./post-interactions";
 const Post = () => {
     return (
          <div className="p-4 border y-[1px] border-borderGray">
@@ -45,6 +46,7 @@ const Post = () => {
                         w={600}
                         h={600}
                     />
+                    <PostInteractions />
                 </div>
             </div>
         </div> 

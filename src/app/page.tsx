@@ -29,13 +29,13 @@ const Homepage = () => {
                   className='pb-3 flex items-center'
                   href='/'
               >
-                  Mohini dey
+                  Mohini Dey
               </Link>
               <Link 
                   className='pb-3 flex items-center'
                   href='/'
               >
-                  Esperanza spalding
+                  Esperanza Spalding
               </Link>
           </div>
           <Share />
