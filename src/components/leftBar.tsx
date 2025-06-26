@@ -11,6 +11,7 @@ import {
     Award, 
     User,
     MoreHorizontal,
+    ListPlus,
   } from 'lucide-react'
   
 const menuList = [
@@ -81,19 +82,19 @@ const LeftBar = () => {
     return ( 
         <div className="h-screen sticky top-0 flex flex-col justify-between pt-2 pb-8">
             {/* logo menu button */}
-            <div className="">
+            <div className="flex flex-col gap-4 text-lg items-center 2xl:items-start">
                 {/* logo */}
-                <Link href='/'>
+                <Link href='/' className="p-2 rounded-full ">
                     <Image 
                         src='/icons/logo.png' 
                         alt='logo'
                         width={24}
                         height={24}
-                        className="ml-2"
+                        className=""
                     />
                 </Link>
                 {/* menu list*/}
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-2">
                     {
                         menuList.map( item => (
                             <Link 
@@ -107,9 +108,31 @@ const LeftBar = () => {
                         ))
                     }
                 </div>
+                {/* button */}
+                <Link href='/' className=" bg-white text-black rounded-full w-12 h-12 flex items-center justify-center 2xl:hidden">
+                    <ListPlus />
+                </Link>
+                <Link href='/' className="hidden 2xl:block bg-white text-black rounded-full font-bold py-2 px-20">
+                    Post
+                </Link>
             </div>
             {/* user */}
-            <div className="">user</div>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 relative rounded-full overflow-hidden">
+                        <Image 
+                            src='/general/profile.jpeg'
+                            alt='profile-pic'
+                            fill
+                        />
+                    </div>
+                    <div className="hidden 2xl:flex flex-col">
+                        <span className="font-bold">LarryDev</span>
+                        <span className="text-sm text-textGray">@LarryDev</span>
+                    </div>
+                </div>
+                <div className="hidden 2xl:block cursor-pointer font-bold">...</div>
+            </div>
         </div>
      );
 }
