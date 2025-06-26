@@ -27,9 +27,11 @@ const ImageComponent = ({
             urlEndpoint={urlEndpoint}
             src={path}
             alt={alt}
+            width={w}
+            height={h}
             className={className}
-            {...(tr ? {transformation: [{width: `${w}`}, {height: `${h}`}]} : { width: w, height: h}) }
-      />
+            {...(tr ? { transformation: [{ width: `${w}` }, { height: `${h}` }] } : {})}
+        />
      );
 };
  
