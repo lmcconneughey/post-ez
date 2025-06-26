@@ -10,6 +10,7 @@ type ImageType = {
     h?: number, 
     alt: string,
     className?: string, 
+    tr?: boolean;
 }
 
 const ImageComponent = ({
@@ -17,19 +18,19 @@ const ImageComponent = ({
     w, 
     h, 
     alt,
-    className 
+    className,
+    tr, 
 
-}: ImageType) => {
+}: ImageType ) => {
     return ( 
         <Image
-        urlEndpoint={urlEndpoint}
-        src={path}
-        width={w}
-        height={h}
-        alt={alt}
-        className={className}
+            urlEndpoint={urlEndpoint}
+            src={path}
+            alt={alt}
+            className={className}
+            {...(tr ? {transformation: [{width: `${w}`}, {height: `${h}`}]} : { width: w, height: h}) }
       />
      );
-}
+};
  
 export default ImageComponent;
