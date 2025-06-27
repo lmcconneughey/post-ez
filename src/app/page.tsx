@@ -20,19 +20,19 @@ const Homepage = () => {
                   Following
               </Link>
               <Link 
-                  className='pb-3 flex items-center'
+                  className='hidden pb-3 md:flex items-center'
                   href='/'
               >
                   Victor Wooten
               </Link>
               <Link 
-                  className='pb-3 flex items-center'
+                  className='hidden pb-3 md:flex items-center'
                   href='/'
               >
                   Mohini Dey
               </Link>
               <Link 
-                  className='pb-3 flex items-center'
+                  className='hidden pb-3 md:flex items-center'
                   href='/'
               >
                   Esperanza Spalding
