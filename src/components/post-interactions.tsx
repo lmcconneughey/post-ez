@@ -2,8 +2,8 @@
 
 const PostInteractions = () => {
     return (
-         <div className="flex items-center justify-between my-2 text-textGray">
-            <div className="flex items-center justify-between gap-4">
+         <div className="flex items-center justify-between gap-8 lg:gap-16 my-2 text-textGray">
+            <div className="flex items-center justify-between gap-4 flex-1">
                 {/* comments */}
                 <div className="group flex items-center cursor-pointer space-x-2">
                     <svg 
