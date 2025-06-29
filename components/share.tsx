@@ -7,17 +7,28 @@ import {
     BarChart2,       
     Smile,          
     CalendarClock,   
-    MapPin,         
+    MapPin,
+    Flag,         
   } from 'lucide-react';
 import { upload } from "@imagekit/next";
+import ImageEditor from "./image-editor";
 //import { shareAction } from "../actions/share-actions";
 
 
 const Share = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [settings, setSettings] = useState<{
+    type: 'origional' | 'wide' | 'square';
+    sensitive: boolean;
+  }>({
+    type: 'origional',
+    sensitive: false,
+  })
   const [isPosting, setIsPosting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -63,7 +74,7 @@ const Share = () => {
       setIsPosting(false);
     }
   };
-
+    // emplement X icon in preview window to delete preview image? href='/'
     return ( 
         <form className="p-4 flex gap-4" onSubmit={handleSubmit}>
             {/* avatar */}
@@ -84,14 +95,25 @@ const Share = () => {
                     placeholder="What is happening?!" 
                     className="bg-transparent outline-none placeholder:text-textGray text-xl" 
                 />
+                {/* preview image */}
                 {previewUrl && (
                     <div className="mt-2">
                         {file?.type.startsWith("image/") ? (
-                        <img
-                            src={previewUrl}
-                            alt="Preview"
-                            className="rounded-lg max-h-64 object-contain"
-                        />
+                        <div className="relative rounded-xl overflow-hidden">   
+                            <img
+                                src={previewUrl}
+                                alt="Preview"
+                                width={600}
+                                height={600}
+                                className="rounded-lg max-h-64 object-contain"
+                            />
+                            <div 
+                                className='absolute top-2 left-2 bg-black text-white py-1 px-4 opacity-60 rounded-full font-bold text-sm cursor-pointer'
+                                onClick={() => setIsEditorOpen(true)}
+                                >
+                                Edit
+                            </div>
+                        </div> 
                         ) : file?.type.startsWith("video/") ? (
                         <video
                             src={previewUrl}
@@ -101,6 +123,14 @@ const Share = () => {
                         ) : null}
                     </div>
                 )}
+                { isEditorOpen && previewUrl && 
+                    <ImageEditor 
+                        onClose={() => setIsEditorOpen(false)}
+                        previewUrl={previewUrl}
+                        settings={settings}
+                        setSettings={setSettings}
+                    />
+                 }
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex gap-4 flex-wrap">
                         {/* icons */}
