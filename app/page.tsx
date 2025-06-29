@@ -1,6 +1,6 @@
-import ImageComponent from '@/components/image';
-import Feed from '@/components/feed';
-import Share from '@/components/share';
+import ImageComponent from '../components/image';
+import Feed from '../components/feed';
+import Share from '../components/share';
 import Link from 'next/link';
 
 const Homepage = () => {
