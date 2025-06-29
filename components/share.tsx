@@ -74,7 +74,7 @@ const Share = () => {
       setIsPosting(false);
     }
   };
-    // emplement X icon in preview window to delete preview image? href='/'
+   
     return ( 
         <form className="p-4 flex gap-4" onSubmit={handleSubmit}>
             {/* avatar */}
@@ -105,7 +105,13 @@ const Share = () => {
                                 alt="Preview"
                                 width={600}
                                 height={600}
-                                className="rounded-lg max-h-64 object-contain"
+                                className={`w-full ${
+                                    settings.type === 'origional' 
+                                    ? 'h-full object-contain'
+                                    : settings.type === 'square'
+                                    ? 'aspect-square object-cover' 
+                                    : 'aspect-video object-cover'
+                                }`}
                             />
                             <div 
                                 className='absolute top-2 left-2 bg-black text-white py-1 px-4 opacity-60 rounded-full font-bold text-sm cursor-pointer'
