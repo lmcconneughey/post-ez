@@ -10,6 +10,7 @@ import {
     MapPin,
     Flag,         
   } from 'lucide-react';
+  
 import { upload } from "@imagekit/next";
 import ImageEditor from "./image-editor";
 //import { shareAction } from "../actions/share-actions";
@@ -38,6 +39,17 @@ const Share = () => {
     }
   };
 
+  const getTransformations = () => {
+    switch (settings.type) {
+      case 'square':
+        return "w-600,ar-1-1";
+      case 'wide':
+        return "w-600,ar-16-9";
+      default:
+        return "w-600,h-600";
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return alert("Please select an image to upload.");
@@ -48,7 +60,7 @@ const Share = () => {
       // Get auth params
       const authRes = await fetch("/api/upload-auth");
       const { token, signature, expire, publicKey } = await authRes.json();
-
+  
       // Upload to ImageKit
       const result = await upload({
         file,
@@ -58,14 +70,27 @@ const Share = () => {
         expire,
         publicKey,
         folder: 'posts',
-      });
+        transformation: {
+            pre: getTransformations()
+          },
+        customMetadata: {
+           sensitive: settings.sensitive,
+        },
 
-      console.log("Uploaded URL:", result.url);
+      });
+      
+      
+
+      console.log("Uploaded URL:", result);
       alert("Upload successful!");// for testing
 
       // Reset state 
       setFile(null);
       setPreviewUrl(null);
+      setSettings({
+        type: 'origional',
+        sensitive: false
+      })
       if (inputRef.current) inputRef.current.value = "";
     } catch (err) {
       console.error("Upload failed:", err);
