@@ -8,7 +8,7 @@ import {
     Smile,          
     CalendarClock,   
     MapPin,
-    Flag,         
+    XIcon,        
   } from 'lucide-react';
   
 import { upload } from "@imagekit/next";
@@ -33,12 +33,18 @@ const Share = () => {
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type.startsWith("image/")) {
+    if (selectedFile && selectedFile.type.startsWith("image/") || selectedFile && selectedFile.type.startsWith("video/")) {
       setFile(selectedFile);
       setPreviewUrl(URL.createObjectURL(selectedFile));
     }
   };
-
+  const resetMedia = () => {
+    setFile(null);
+    setPreviewUrl(null);
+    setIsEditorOpen(false);
+    if (inputRef.current) inputRef.current.value = "";
+  };
+    
   const getTransformations = () => {
     switch (settings.type) {
       case 'square':
@@ -77,29 +83,25 @@ const Share = () => {
            sensitive: settings.sensitive,
         },
 
-      });
-      
-      
+      }); 
 
-      console.log("Uploaded URL:", result);
+      // console.log("Uploaded URL:", result);
       alert("Upload successful!");// for testing
 
       // Reset state 
-      setFile(null);
-      setPreviewUrl(null);
+      resetMedia()
       setSettings({
         type: 'origional',
         sensitive: false
       })
-      if (inputRef.current) inputRef.current.value = "";
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed");
     } finally {
       setIsPosting(false);
     }
-  };
-   
+  };  
+  
     return ( 
         <form className="p-4 flex gap-4" onSubmit={handleSubmit}>
             {/* avatar */}
@@ -123,8 +125,8 @@ const Share = () => {
                 {/* preview image */}
                 {previewUrl && (
                     <div className="mt-2">
-                        {file?.type.startsWith("image/") ? (
-                        <div className="relative rounded-xl overflow-hidden">   
+                        {file?.type.startsWith("image/") && previewUrl ? (
+                         <div className="relative rounded-xl overflow-hidden">   
                             <img
                                 src={previewUrl}
                                 alt="Preview"
@@ -139,19 +141,31 @@ const Share = () => {
                                 }`}
                             />
                             <div 
-                                className='absolute top-2 left-2 bg-black text-white py-1 px-4 opacity-60 rounded-full font-bold text-sm cursor-pointer'
-                                onClick={() => setIsEditorOpen(true)}
-                                >
-                                Edit
+                              className='absolute top-2 left-2 bg-black text-white py-1 px-4 opacity-60 rounded-full font-bold text-sm cursor-pointer'
+                              onClick={() => setIsEditorOpen(true)}
+                              >
+                              Edit
                             </div>
+                            <div className='absolute top-2 right-2 bg-black text-white py-1 px-4 flex items-center justify-center opacity-60 rounded-full font-bold text-sm cursor-pointer'
+                              onClick={resetMedia}
+                            >
+                            x
+                          </div>
                         </div> 
-                        ) : file?.type.startsWith("video/") ? (
-                        <video
+                        ) : file?.type.startsWith("video/") && previewUrl ? (
+                        <div className="relative">
+                          <video
                             src={previewUrl}
                             controls
                             className="rounded-lg max-h-64"
                         />
-                        ) : null}
+                        <div className='absolute top-2 right-2 bg-black text-white py-1 px-4 flex items-center justify-center opacity-60 rounded-full font-bold text-sm cursor-pointer'
+                          onClick={resetMedia}
+                        >
+                          x
+                        </div>
+                        </div>
+                        ): null}
                     </div>
                 )}
                 { isEditorOpen && previewUrl && 
@@ -172,6 +186,7 @@ const Share = () => {
                             className="hidden" 
                             ref={inputRef}
                             id='file'
+                            accept='image/*,video/*'
                         />
                         <label htmlFor="file">
                             <Image
