@@ -66,6 +66,9 @@ const Share = () => {
       // Get auth params
       const authRes = await fetch("/api/upload-auth");
       const { token, signature, expire, publicKey } = await authRes.json();
+
+      const isImage = file.type.startsWith("image/");
+
   
       // Upload to ImageKit
       const result = await upload({
@@ -76,16 +79,17 @@ const Share = () => {
         expire,
         publicKey,
         folder: 'posts',
-        transformation: {
+        ...(isImage && {// videos are too expensive
+          transformation: {
             pre: getTransformations()
           },
+        }),
         customMetadata: {
-           sensitive: settings.sensitive,
+          sensitive: settings.sensitive,
         },
-
       }); 
 
-      // console.log("Uploaded URL:", result);
+      console.log("Uploaded URL:", result);
       alert("Upload successful!");// for testing
 
       // Reset state 
@@ -158,7 +162,7 @@ const Share = () => {
                             src={previewUrl}
                             controls
                             className="rounded-lg max-h-64"
-                        />
+                          />
                         <div className='absolute top-2 right-2 bg-black text-white py-1 px-4 flex items-center justify-center opacity-60 rounded-full font-bold text-sm cursor-pointer'
                           onClick={resetMedia}
                         >

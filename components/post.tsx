@@ -2,6 +2,7 @@ import { imagekit } from "../utils";
 import ImageComponent from "./image";
 import PostInfo from "./post-info";
 import PostInteractions from "./post-interactions";
+import Video from "./video";
 
 interface FileDetailsResonse {
     width: number;
@@ -28,8 +29,8 @@ const Post = async () => {
         });
       };
     
-        const fileDetails = await getFileDetails("6862e11a5c7cd75eb8ccb760");
-        //console.log("File details:", fileDetails);
+        const fileDetails = await getFileDetails("68640eb35c7cd75eb8703504");
+        console.log("File details:", fileDetails);
      
  
     return (
@@ -79,23 +80,24 @@ const Post = async () => {
                         interested. #fun #life #webdev!
 
                     </p>
-                    {/* <ImageComponent 
-                        path='/posts/flute-7296582_1280.jpg'
-                        alt='test post image'
-                        w={600}
-                        h={600}
-                    /> */}
-                    {fileDetails && (
+                    {fileDetails && fileDetails.fileType === 'image' ? (
                         <ImageComponent 
                         path={fileDetails.filePath}
                         alt='test post image'
                         w={fileDetails.width}
                         h={fileDetails.height}
-                        // className={fileDetails.customMetadata?.sensitive 
-                        // ? 'blur-lg'
-                        // : ''
-                        // }
-                    />)
+                        className={fileDetails.customMetadata?.sensitive 
+                            ? 'blur-lg'
+                            : ''
+                            }
+                    />) 
+                    : <Video 
+                        path={fileDetails.filePath}
+                        classname={fileDetails.customMetadata?.sensitive 
+                            ? 'blur-lg'
+                            : ''
+                            }
+                    />
                     }
                     <PostInteractions />
                 </div>
