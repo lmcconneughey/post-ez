@@ -80,7 +80,7 @@ const menuList = [
 
 const LeftBar = () => {
     return ( 
-        <div className="h-screen sticky top-0 flex flex-col justify-between pt-2 pb-8">
+        <div className="sticky top-0 h-screen flex flex-col justify-between pt-2 pb-8">
             {/* logo menu button */}
             <div className="flex flex-col gap-4 text-lg items-center 2xl:items-start">
                 {/* logo */}
