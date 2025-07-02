@@ -1,7 +1,5 @@
-<<<<<<< HEAD
-import ImageComponent from "./image";
-=======
->>>>>>> 4d9c586 (Initial commit from new device)
+
+
 import { Search} from 'lucide-react';
 
 const SearchBar = () => {
