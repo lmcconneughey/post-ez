@@ -1,7 +1,10 @@
 import Link from "next/link";
 import PopularTags from "./popular-tags";
 import Recommendations from "./recommendations";
+<<<<<<< HEAD
 import Search from "./search-bar";
+=======
+>>>>>>> 4d9c586 (Initial commit from new device)
 import SearchBar from "./search-bar";
 
 const RightBar = () => {

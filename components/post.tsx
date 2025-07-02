@@ -76,8 +76,7 @@ const Post = async () => {
                     {/* text and media */}
                     <p>
                         Just published a new article about the latest trends 
-                        in all things fun! Check it out if you're 
-                        interested. #fun #life #webdev!
+                        in all things fun! #fun #life #webdev!
 
                     </p>
                     {fileDetails && fileDetails.fileType === 'image' ? (

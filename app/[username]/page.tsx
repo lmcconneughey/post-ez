@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ImageComponent from "../../components/image";
-import { ArrowLeftIcon, Calendar, CircleEllipsis, MailIcon, MapPin, MessageSquareIcon, Search } from "lucide-react";
+import { ArrowLeftIcon, Calendar, CircleEllipsis, MailIcon, MapPin, Search } from "lucide-react";
 import Feed from "../../components/feed";
 
 const UserPage = () => {

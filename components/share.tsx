@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import ImageComponent from "./image";
 import {
+<<<<<<< HEAD
     Image,           
     BarChart2,       
     Smile,          
@@ -11,6 +12,15 @@ import {
     XIcon,        
   } from 'lucide-react';
   
+=======
+    Image as ImageIcon,           
+    BarChart2,       
+    Smile,          
+    CalendarClock,   
+    MapPin,      
+  } from 'lucide-react';
+import Image from "next/image";
+>>>>>>> 4d9c586 (Initial commit from new device)
 import { upload } from "@imagekit/next";
 import ImageEditor from "./image-editor";
 //import { shareAction } from "../actions/share-actions";
@@ -131,7 +141,11 @@ const Share = () => {
                     <div className="mt-2">
                         {file?.type.startsWith("image/") && previewUrl ? (
                          <div className="relative rounded-xl overflow-hidden">   
+<<<<<<< HEAD
                             <img
+=======
+                            <Image
+>>>>>>> 4d9c586 (Initial commit from new device)
                                 src={previewUrl}
                                 alt="Preview"
                                 width={600}
@@ -193,10 +207,19 @@ const Share = () => {
                             accept='image/*,video/*'
                         />
                         <label htmlFor="file">
+<<<<<<< HEAD
                             <Image
                                 width={20} // Directly set width to 20px
                                 height={20} // Directly set height to 20px
                                 className="cursor-pointer text-blue-400 hover:text-blue-300" // Tailwind classes for styling
+=======
+                            <ImageIcon
+                                width={20} // Directly set width to 20px
+                                height={20} // Directly set height to 20px
+                                className="cursor-pointer text-blue-400 hover:text-blue-300" // Tailwind classes for styling
+                                role='icon'
+                                aria-label="image icon"
+>>>>>>> 4d9c586 (Initial commit from new device)
                             />
                          </label>
                         <ImageComponent 
