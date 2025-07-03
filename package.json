@@ -13,6 +13,7 @@
     "imagekit": "^6.0.0",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
+    "prisma": "^6.11.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
