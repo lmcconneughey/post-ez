@@ -1,33 +1,38 @@
 {
-  "name": "x-clone",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@imagekit/next": "^2.1.2",
-    "@prisma/client": "^6.11.1",
-    "imagekit": "^6.0.0",
-    "lucide-react": "^0.523.0",
-    "next": "15.3.4",
-    "prisma": "^6.11.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.4",
-    "prettier": "^3.6.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "name": "x-clone",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@faker-js/faker": "^9.9.0",
+        "@imagekit/next": "^2.1.2",
+        "imagekit": "^6.0.0",
+        "lucide-react": "^0.523.0",
+        "next": "15.3.4",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "ts-node": "^10.9.2"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "@prisma/client": "^6.11.1",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "15.3.4",
+        "prettier": "^3.6.1",
+        "prisma": "^6.11.1",
+        "tailwindcss": "^4",
+        "typescript": "^5"
+    },
+    "prisma": {
+        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    }
 }
