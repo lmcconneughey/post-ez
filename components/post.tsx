@@ -32,7 +32,7 @@ const Post = async ({ type }: { type?: 'status' | 'comment' }) => {
     };
 
     const fileDetails = await getFileDetails('68640eb35c7cd75eb8703504');
-    console.log('File details:', fileDetails);
+    //console.log('File details:', fileDetails);
 
     return (
         <div className='p-4 border y-[1px] border-borderGray'>

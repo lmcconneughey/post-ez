@@ -9,8 +9,20 @@ import {
     Search,
 } from 'lucide-react';
 import Feed from '../../../components/feed';
+import { prisma } from '../../../db/prisma';
+import { notFound } from 'next/navigation';
 
-const UserPage = () => {
+const UserPage = async ({
+    params,
+}: {
+    params: Promise<{ username: string }>;
+}) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            userName: (await params).username,
+        },
+    });
+    if (!user) return notFound();
     return (
         <div className=''>
             {/* profile title */}
@@ -94,7 +106,7 @@ const UserPage = () => {
                 </div>
             </div>
             {/* feed */}
-            <Feed />
+            <Feed userProfileId={user.id} />
         </div>
     );
 };

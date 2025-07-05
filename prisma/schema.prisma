@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String      @id
   email       String      @unique()
   userName    String      @unique()
   displayName String?
@@ -33,18 +33,16 @@ model Post {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   desc         String?
-  name         String
   img          String?
   video        String?
   isSensitive  Boolean     @default(false)
-  userId       String      @db.Uuid
+  userId       String
   repostId     String?     @db.Uuid
   repost       Post?       @relation("Reposts", fields: [repostId], references: [id])
   user         User        @relation(fields: [userId], references: [id])
   reposts      Post[]      @relation("Reposts")
   parentPostId String?     @db.Uuid
   parentPost   Post?       @relation("PostComments", fields: [parentPostId], references: [id])
-  postId       String?     @db.Uuid
   comments     Post[]      @relation("PostComments")
   Like         Like[]
   SavedPost    SavedPost[]
@@ -53,8 +51,8 @@ model Post {
 model Like {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
-  userId    String   @db.Uuid
-  postId    String   @db.Uuid
+  userId    String
+  postId    String   @db.Uuid // FIX: Added @db.Uuid here
   user      User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
 
@@ -66,8 +64,8 @@ model Like {
 model SavedPost {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
-  userId    String   @db.Uuid
-  postId    String   @db.Uuid
+  userId    String
+  postId    String   @db.Uuid // FIX: Added @db.Uuid here
   user      User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
 
@@ -79,8 +77,8 @@ model SavedPost {
 model Follow {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt   DateTime @default(now())
-  followerId  String   @db.Uuid
-  followingId String   @db.Uuid
+  followerId  String
+  followingId String
   follower    User     @relation("UserFollowers", fields: [followerId], references: [id])
   following   User     @relation("UserFollowing", fields: [followingId], references: [id])
 }
