@@ -1,5 +1,5 @@
-import Feed from '../components/feed';
-import Share from '../components/share';
+import Feed from '../../components/feed';
+import Share from '../../components/share';
 import Link from 'next/link';
 
 const Homepage = () => {

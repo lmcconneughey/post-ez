@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@clerk/elements": "^0.23.37",
         "@clerk/nextjs": "^6.23.3",
         "@faker-js/faker": "^9.9.0",
         "@imagekit/next": "^2.1.2",

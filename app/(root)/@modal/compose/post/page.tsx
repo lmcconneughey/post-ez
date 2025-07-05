@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import ImageComponent from '../../../../components/image';
+import ImageComponent from '../../../../../components/image';
 import {
     BarChart2,
     CalendarClock,

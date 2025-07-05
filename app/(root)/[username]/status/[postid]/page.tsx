@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
-import Post from '../../../../components/post';
-import Comments from '../../../../components/comments';
+import Post from '../../../../../components/post';
+import Comments from '../../../../../components/comments';
 
 const StatusPage = () => {
     return (
