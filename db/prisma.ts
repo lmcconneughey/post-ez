@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'; //<< Prisma client must generated into node_modules/@prisma/client, the build process can't find it
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 

@@ -3,7 +3,7 @@
 import ImageComponent from '../../../components/image';
 import Image from 'next/image';
 import * as Clerk from '@clerk/elements/common';
-import * as SignUp from '@clerk/elements/sign-Up';
+import * as SignUp from '@clerk/elements/sign-up';
 import Link from 'next/link';
 
 const SignUpPage = () => {
