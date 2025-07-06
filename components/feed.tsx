@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../db/prisma';
 import Post from './post';
+import { Post as PrismaPostType } from '@prisma/client';
 
 const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
     const { userId } = await auth();
@@ -39,7 +40,7 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
 
     return (
         <div className=''>
-            {posts.map((post) => (
+            {posts.map((post: PrismaPostType) => (
                 <div key={post.id}>
                     <Post />
                 </div>
