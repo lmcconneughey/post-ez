@@ -1,37 +1,37 @@
 import Link from 'next/link';
-import { imagekit } from '../utils';
+//import { imagekit } from '../utils';
 import ImageComponent from './image';
 import PostInfo from './post-info';
 import PostInteractions from './post-interactions';
-import Video from './video';
+//import Video from './video';
 
-interface FileDetailsResonse {
-    width: number;
-    height: number;
-    filePath: string;
-    url: string;
-    fileType: string;
-    customMetadata?: {
-        sensitive: boolean;
-    };
-}
+// interface FileDetailsResonse {
+//     width: number;
+//     height: number;
+//     filePath: string;
+//     url: string;
+//     fileType: string;
+//     customMetadata?: {
+//         sensitive: boolean;
+//     };
+// }
 
-const Post = async ({ type }: { type?: 'status' | 'comment' }) => {
-    const getFileDetails = async (
-        fileId: string,
-    ): Promise<FileDetailsResonse> => {
-        return new Promise((resolve, reject) => {
-            imagekit.getFileDetails(fileId, function (error, result) {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(result as FileDetailsResonse);
-                }
-            });
-        });
-    };
+const Post = ({ type }: { type?: 'status' | 'comment' }) => {
+    // const getFileDetails = async (
+    //     fileId: string,
+    // ): Promise<FileDetailsResonse> => {
+    //     return new Promise((resolve, reject) => {
+    //         imagekit.getFileDetails(fileId, function (error, result) {
+    //             if (error) {
+    //                 reject(error);
+    //             } else {
+    //                 resolve(result as FileDetailsResonse);
+    //             }
+    //         });
+    //     });
+    // };
 
-    const fileDetails = await getFileDetails('68640eb35c7cd75eb8703504');
+    //const fileDetails = await getFileDetails('68640eb35c7cd75eb8703504');
     //console.log('File details:', fileDetails);
 
     return (
@@ -110,7 +110,7 @@ const Post = async ({ type }: { type?: 'status' | 'comment' }) => {
                             design. #fun #life #webdev!
                         </p>
                     </Link>
-                    {fileDetails && fileDetails.fileType === 'image' ? (
+                    {/* {fileDetails && fileDetails.fileType === 'image' ? (
                         <ImageComponent
                             path={fileDetails.filePath}
                             alt='test post image'
@@ -131,7 +131,7 @@ const Post = async ({ type }: { type?: 'status' | 'comment' }) => {
                                     : ''
                             }
                         />
-                    )}
+                    )} */}
                     {type === 'status' && (
                         <span className='text-textGray'>
                             2:34 PM Jul 2, 2025
