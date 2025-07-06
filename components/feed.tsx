@@ -23,10 +23,10 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                                   followerId: userId,
                               },
                               select: {
-                                  followerId: true,
+                                  followingId: true,
                               },
                           })
-                      ).map((follow) => follow.followerId),
+                      ).map((follow) => follow.followingId),
                   ],
               },
           };
