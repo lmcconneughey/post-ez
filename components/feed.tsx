@@ -38,6 +38,26 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
 
     const posts = await prisma.post.findMany({
         where: whereCondition,
+        include: {
+            user: {
+                select: {
+                    displayName: true,
+                    userName: true,
+                    img: true,
+                },
+            },
+            repost: {
+                include: {
+                    user: {
+                        select: {
+                            displayName: true,
+                            userName: true,
+                            img: true,
+                        },
+                    },
+                },
+            },
+        },
         take: 3,
         skip: 0,
         orderBy: { createdAt: 'desc' },
@@ -46,9 +66,9 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
 
     return (
         <div className=''>
-            {posts.map((post: PrismaPostType) => (
+            {posts.map((post) => (
                 <div key={post.id}>
-                    <Post />
+                    <Post post={post} />
                 </div>
             ))}
             <InfiniteFeed />

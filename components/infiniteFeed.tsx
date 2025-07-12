@@ -5,30 +5,34 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Post from './post';
 
 const fetchPosts = async (pageParam: number, userProfileId?: string) => {
-    const res = await fetch(
-        'http://localhost:3000/api/posts?cursor=' +
-            pageParam +
-            '&user' +
-            userProfileId,
-    );
+    const params = new URLSearchParams();
+    params.set('cursor', pageParam.toString());
+
+    if (userProfileId) {
+        params.set('user', userProfileId);
+    }
+
+    const res = await fetch(`/api/posts?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch posts');
     return res.json();
 };
 
 const InfiniteFeed = ({ userProfileId }: { userProfileId?: string }) => {
     const { data, error, status, hasNextPage, fetchNextPage } =
         useInfiniteQuery({
-            queryKey: ['posts'],
+            queryKey: ['posts', userProfileId],
             queryFn: ({ pageParam = 2 }) =>
                 fetchPosts(pageParam, userProfileId),
             initialPageParam: 2,
             getNextPageParam: (lastPage, pages) =>
                 lastPage.hasMore ? pages.length + 2 : undefined,
         });
+
     if (error) return 'Something went wrong';
     if (status === 'pending') return 'Loading...';
-    console.log(data);
 
-    const allPosts = data?.pages?.flatMap((page) => page.posts) || []; // so we can see previous pages
+    const allPosts = data?.pages?.flatMap((page) => page.posts) || [];
+
     return (
         <InfiniteScroll
             dataLength={allPosts.length}
@@ -38,7 +42,7 @@ const InfiniteFeed = ({ userProfileId }: { userProfileId?: string }) => {
             endMessage={<h1>All posts</h1>}
         >
             {allPosts.map((post) => (
-                <Post key={post.id} />
+                <Post key={post.id} post={post} />
             ))}
         </InfiniteScroll>
     );
