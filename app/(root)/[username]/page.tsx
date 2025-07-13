@@ -11,18 +11,35 @@ import {
 import Feed from '../../../components/feed';
 import { prisma } from '../../../db/prisma';
 import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
+import { format } from 'timeago.js';
 
 const UserPage = async ({
     params,
 }: {
     params: Promise<{ username: string }>;
 }) => {
+    const { userId } = await auth();
     const user = await prisma.user.findUnique({
         where: {
             userName: (await params).username,
         },
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                },
+            },
+            following: {
+                where: {
+                    followerId: userId || undefined,
+                },
+            },
+        },
     });
     if (!user) return notFound();
+
     return (
         <div className=''>
             {/* profile title */}
@@ -30,7 +47,7 @@ const UserPage = async ({
                 <Link href='/'>
                     <ArrowLeftIcon size={24} />
                 </Link>
-                <h1 className='font-bold text-lg'>Lawrence McConneughey</h1>
+                <h1 className='font-bold text-lg'>{user.displayName}</h1>
             </div>
             {/* info */}
             <div className=''>
@@ -38,7 +55,9 @@ const UserPage = async ({
                     {/* cover */}
                     <div className='w-full aspct-[3/1] relative'>
                         <ImageComponent
-                            path='posts/mountains-5819652_640.jpg'
+                            path={
+                                user.cover || 'posts/mountains-5819652_640.jpg'
+                            }
                             alt='test iamge'
                             w={600}
                             h={200}
@@ -49,7 +68,10 @@ const UserPage = async ({
                     {/* avatar */}
                     <div className='w-1/6 aspect-square rounded-full overflow-hidden border-4 border-black bg-gray-300 absolute left-4 -translate-y-1/2'>
                         <ImageComponent
-                            path='posts/man-4333898_640.jpg'
+                            path={
+                                user.img ||
+                                'posts/blank-profile-picture-973460_640.png'
+                            }
                             alt='avatar test iamge'
                             w={100}
                             h={100}
@@ -74,30 +96,40 @@ const UserPage = async ({
                 {/* user info */}
                 <div className='p-4 flex flex-col gap-2'>
                     <div className=''>
-                        <h1 className='font-bold text-2xl'>John D</h1>
-                        <span className='text-textGray text-sm'>@JohnD</span>
+                        <h1 className='font-bold text-2xl'>
+                            {user.displayName}
+                        </h1>
+                        <span className='text-textGray text-sm'>
+                            @{user.userName}
+                        </span>
                     </div>
-                    <p className=''>John D travel jazz bassist</p>
+                    {user.bio && <p className=''>{user.bio}</p>}
                     {/* job, loc, date */}
                     <div className='flex gap-4 text-textGray text-[15px]'>
-                        <div className='flex items-center gap-2 '>
-                            <MapPin size={20} />
-                            <span>USA</span>
-                        </div>
+                        {user.location && (
+                            <div className='flex items-center gap-2 '>
+                                <MapPin size={20} />
+                                <span>{user.location}</span>
+                            </div>
+                        )}
                         <div className='flex items-center gap-2 '>
                             <Calendar size={20} />
-                            <span>Joined at date</span>
+                            <span>Joined {format(user.createdAt)}</span>
                         </div>
                     </div>
                     <div className='flex gap-4'>
                         <div className='flex items-center gap-2'>
-                            <span className='font-bold'>100</span>
+                            <span className='font-bold'>
+                                {user._count.followers}
+                            </span>
                             <span className='text-textGray text-[15px]'>
                                 Followers
                             </span>
                         </div>
                         <div className='flex items-center gap-2'>
-                            <span className='font-bold'>100</span>
+                            <span className='font-bold'>
+                                {user._count.following}
+                            </span>
                             <span className='text-textGray text-[15px]'>
                                 Followings
                             </span>
