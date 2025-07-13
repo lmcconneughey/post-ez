@@ -19,7 +19,35 @@ type PostDetails = PrismaPost & {
             userName: string;
             img: string | null;
         };
+        _count: {
+            Like: number;
+            reposts: number;
+            comments: number;
+        };
+        Like: {
+            id: string;
+        }[];
+        reposts: {
+            id: string;
+        }[];
+        SavedPost: {
+            id: string;
+        }[];
     };
+    _count: {
+        Like: number;
+        reposts: number;
+        comments: number;
+    };
+    Like: {
+        id: string;
+    }[];
+    reposts: {
+        id: string;
+    }[];
+    SavedPost: {
+        id: string;
+    }[];
 };
 
 const Post = ({
@@ -73,7 +101,10 @@ const Post = ({
                 <div className='flex-1 flex flex-col space-y-2'>
                     {/* top */}
                     <div className='w-full flex justify-between'>
-                        <Link href={`/test`} className='flex gap-4'>
+                        <Link
+                            href={`/${origionalPost.user.userName}`}
+                            className='flex gap-4'
+                        >
                             <div
                                 className={`${type !== 'status' && 'hidden'} relative w-10 h-10 rounded-full overflow-x-hidden`}
                             >
@@ -129,7 +160,12 @@ const Post = ({
                             2:34 PM Jul 2, 2025
                         </span>
                     )}
-                    <PostInteractions />
+                    <PostInteractions
+                        count={origionalPost._count}
+                        isLiked={!!origionalPost.Like.length}
+                        isReposted={!!origionalPost.reposts.length}
+                        isSaved={!!origionalPost.SavedPost.length}
+                    />
                 </div>
             </div>
         </div>

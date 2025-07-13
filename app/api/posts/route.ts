@@ -57,6 +57,68 @@ export async function GET(request: NextRequest) {
                                 img: true,
                             },
                         },
+                        _count: {
+                            select: {
+                                Like: true,
+                                reposts: true,
+                                comments: true,
+                            },
+                        },
+                        Like: {
+                            where: {
+                                userId, // userId : current userId
+                            },
+                            select: {
+                                id: true, // if the id exists, user already liked post
+                            },
+                        },
+                        reposts: {
+                            where: {
+                                userId, // userId : current userId
+                            },
+                            select: {
+                                id: true, // if the id exists, user already liked post
+                            },
+                        },
+                        SavedPost: {
+                            where: {
+                                userId, // userId : current userId
+                            },
+                            select: {
+                                id: true, // if the id exists, user already liked post
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        Like: true,
+                        reposts: true,
+                        comments: true,
+                    },
+                },
+                Like: {
+                    where: {
+                        userId, // userId : current userId
+                    },
+                    select: {
+                        id: true, // if the id exists, user already liked post
+                    },
+                },
+                reposts: {
+                    where: {
+                        userId, // userId : current userId
+                    },
+                    select: {
+                        id: true, // if the id exists, user already liked post
+                    },
+                },
+                SavedPost: {
+                    where: {
+                        userId, // userId : current userId
+                    },
+                    select: {
+                        id: true, // if the id exists, user already liked post
                     },
                 },
             },

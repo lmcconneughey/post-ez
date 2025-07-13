@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../db/prisma';
 import Post from './post';
-import { Post as PrismaPostType } from '@prisma/client';
+//import { Post as PrismaPostType } from '@prisma/client';
 import InfiniteFeed from './infiniteFeed';
 
 const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
@@ -46,6 +46,7 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                     img: true,
                 },
             },
+
             repost: {
                 include: {
                     user: {
@@ -55,6 +56,68 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                             img: true,
                         },
                     },
+                    _count: {
+                        select: {
+                            Like: true,
+                            reposts: true,
+                            comments: true,
+                        },
+                    },
+                    Like: {
+                        where: {
+                            userId, // userId : current userId
+                        },
+                        select: {
+                            id: true, // if the id exists, user already liked post
+                        },
+                    },
+                    reposts: {
+                        where: {
+                            userId, // userId : current userId
+                        },
+                        select: {
+                            id: true, // if the id exists, user already liked post
+                        },
+                    },
+                    SavedPost: {
+                        where: {
+                            userId, // userId : current userId
+                        },
+                        select: {
+                            id: true, // if the id exists, user already liked post
+                        },
+                    },
+                },
+            },
+            _count: {
+                select: {
+                    Like: true,
+                    reposts: true,
+                    comments: true,
+                },
+            },
+            Like: {
+                where: {
+                    userId, // userId : current userId
+                },
+                select: {
+                    id: true, // if the id exists, user already liked post
+                },
+            },
+            reposts: {
+                where: {
+                    userId, // userId : current userId
+                },
+                select: {
+                    id: true, // if the id exists, user already liked post
+                },
+            },
+            SavedPost: {
+                where: {
+                    userId, // userId : current userId
+                },
+                select: {
+                    id: true, // if the id exists, user already liked post
                 },
             },
         },
@@ -62,7 +125,6 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
         skip: 0,
         orderBy: { createdAt: 'desc' },
     });
-    //console.log(posts);
 
     return (
         <div className=''>
