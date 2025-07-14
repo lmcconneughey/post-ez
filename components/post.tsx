@@ -88,7 +88,7 @@ const Post = ({
                     <ImageComponent
                         path={
                             origionalPost.user.img ||
-                            'posts/Portriat_Photography_Composition_Tips_FgwkiG9uc.jpg'
+                            'posts/blank-profile-picture-973460_640.png'
                         }
                         alt=''
                         w={100}

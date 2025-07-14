@@ -1,43 +1,41 @@
-'use client'
-
+'use client';
 
 import { Image, buildSrc } from '@imagekit/next';
 import { useState } from 'react';
 
-const urlEndpoint= process.env.NEXT_PUBLIC_URL_ENDPOINT
+const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 type ImageType = {
-    path: string, 
-    w?: number, 
-    h?: number, 
-    alt: string,
-    className?: string, 
+    path: string;
+    w?: number;
+    h?: number;
+    alt: string;
+    className?: string;
     tr?: boolean;
-}
+};
 
 const ImageComponent = ({
-    path, 
-    w, 
-    h, 
+    path,
+    w,
+    h,
     alt,
     className,
-    tr = false, 
-
-}: ImageType ) => {
+    tr = false,
+}: ImageType) => {
     const [loaded, setLoaded] = useState(false);
     const placeholderUrl = buildSrc({
         urlEndpoint: urlEndpoint as string,
         src: path,
         transformation: [
             tr ? { width: w, height: h } : {},
-          {
-            quality: 10,
-            blur: 50,
-          },
+            {
+                quality: 10,
+                blur: 50,
+            },
         ],
-      });
-    return ( 
-            <Image
+    });
+    return (
+        <Image
             urlEndpoint={urlEndpoint}
             src={path}
             alt={alt}
@@ -52,10 +50,10 @@ const ImageComponent = ({
                 backgroundRepeat: 'no-repeat',
                 transition: 'filter 0.1s ease-out',
                 filter: loaded ? 'blur(0)' : 'blur(10px)',
-              }}
-            onLoad={() => setLoaded(true)}            
+            }}
+            onLoad={() => setLoaded(true)}
         />
-     );
+    );
 };
- 
+
 export default ImageComponent;
