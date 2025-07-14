@@ -13,6 +13,7 @@ import { prisma } from '../../../db/prisma';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { format } from 'timeago.js';
+import FollowButton from '../../../components/follow-button';
 
 const UserPage = async ({
     params,
@@ -89,9 +90,12 @@ const UserPage = async ({
                     <div className='w-9 h-9 flex items-center justify-center rounded-full border-[1px] border-gray-500 cursor-pointer '>
                         <MailIcon size={20} />
                     </div>
-                    <button className='py-2 px-4 bg-white text-black font-bold rounded-full '>
-                        Follow
-                    </button>
+                    {userId && (
+                        <FollowButton
+                            userId={user.id}
+                            isFollowed={!!user.following.length}
+                        />
+                    )}
                 </div>
                 {/* user info */}
                 <div className='p-4 flex flex-col gap-2'>
