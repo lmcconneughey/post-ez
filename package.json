@@ -25,7 +25,8 @@
         "svix": "^1.69.0",
         "timeago.js": "^4.0.2",
         "ts-node": "^10.9.2",
-        "uuid": "^11.1.0"
+        "uuid": "^11.1.0",
+        "zod": "^4.0.5"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
@@ -42,6 +43,6 @@
         "typescript": "^5"
     },
     "prisma": {
-        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+        "seed": "ts-node --project prisma/tsconfig.json prisma/seed.ts"
     }
 }

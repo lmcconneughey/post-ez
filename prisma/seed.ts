@@ -28,16 +28,20 @@ async function main() {
     const posts = [];
     for (let i = 0; i < users.length; i++) {
         for (let j = 1; j <= 5; j++) {
+            const hasImage = faker.datatype.boolean(); // Determine if post has an image
             const post = await prisma.post.create({
                 data: {
                     desc: `Post ${j} by ${users[i].userName}`,
                     userId: users[i].id,
-                    img: faker.datatype.boolean()
+                    img: hasImage // Only provide img if hasImage is true
                         ? faker.image.urlPicsumPhotos({
                               width: 600,
                               height: 400,
                           })
                         : null,
+                    imgHeight: hasImage // FIX: Provide imgHeight only if image exists
+                        ? faker.number.int({ min: 200, max: 600 }) // Random height for image
+                        : null, // Set to null if no image
                     video: null,
                     isSensitive: faker.datatype.boolean(0.1),
                 },
@@ -74,11 +78,20 @@ async function main() {
     console.log('Seeding comments...');
     const comments = [];
     for (let i = 0; i < posts.length; i++) {
+        const hasImage = faker.datatype.boolean(0.3); // Comments can also have images
         const comment = await prisma.post.create({
             data: {
                 desc: `Comment on Post ${posts[i].id} by ${users[(i + 1) % 5].userName}`,
                 userId: users[(i + 1) % 5].id,
                 parentPostId: posts[i].id,
+                img: hasImage
+                    ? faker.image.urlPicsumPhotos({ width: 400, height: 300 })
+                    : null,
+                imgHeight: hasImage
+                    ? faker.number.int({ min: 150, max: 400 })
+                    : null,
+                video: null,
+                isSensitive: faker.datatype.boolean(0.05),
             },
         });
         comments.push(comment);
@@ -88,11 +101,20 @@ async function main() {
     console.log('Seeding reposts...');
     const reposts = [];
     for (let i = 0; i < posts.length; i++) {
+        const hasImage = faker.datatype.boolean(0.2); // Reposts can also have images
         const repost = await prisma.post.create({
             data: {
                 desc: `Repost of Post ${posts[i].id} by ${users[(i + 2) % 5].userName}`,
                 userId: users[(i + 2) % 5].id,
                 repostId: posts[i].id,
+                img: hasImage
+                    ? faker.image.urlPicsumPhotos({ width: 500, height: 350 })
+                    : null,
+                imgHeight: hasImage
+                    ? faker.number.int({ min: 180, max: 500 })
+                    : null,
+                video: null,
+                isSensitive: faker.datatype.boolean(0.08),
             },
         });
         reposts.push(repost);
@@ -120,4 +142,5 @@ main()
         console.error(e);
         await prisma.$disconnect();
         process.exit(1);
-    });
+    })
+    .finally(() => prisma.$disconnect());
