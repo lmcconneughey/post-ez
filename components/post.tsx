@@ -141,7 +141,9 @@ const Post = ({
                         <PostInfo />
                     </div>
                     {/* text and media */}
-                    <Link href={`/test/status/willMkaeDynamic`}>
+                    <Link
+                        href={`/${origionalPost.user.userName}/status/${origionalPost.id}`}
+                    >
                         <p className={`${type == 'status' && 'text-lg'}`}>
                             {origionalPost.desc}
                         </p>
