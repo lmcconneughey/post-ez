@@ -163,6 +163,7 @@ const Post = ({
                         </span>
                     )}
                     <PostInteractions
+                        postId={origionalPost.id}
                         count={origionalPost._count}
                         isLiked={!!origionalPost.Like.length}
                         isReposted={!!origionalPost.reposts.length}
