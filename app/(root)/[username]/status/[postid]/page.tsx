@@ -62,6 +62,7 @@ const StatusPage = async ({
                 },
             },
             comments: {
+                orderBy: { createdAt: 'desc' },
                 include: {
                     user: {
                         select: {
@@ -120,7 +121,7 @@ const StatusPage = async ({
             <Comments
                 comments={post.comments}
                 postId={post.id}
-                username={post.user.userName}
+                userName={post.user.userName}
             />
         </div>
     );
