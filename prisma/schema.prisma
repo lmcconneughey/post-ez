@@ -29,24 +29,26 @@ model User {
 }
 
 model Post {
-  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  desc         String?
-  img          String?
-  imgHeight    Int?
-  video        String?
-  isSensitive  Boolean     @default(false)
-  userId       String
-  repostId     String?     @db.Uuid
-  repost       Post?       @relation("Reposts", fields: [repostId], references: [id])
-  user         User        @relation(fields: [userId], references: [id])
-  reposts      Post[]      @relation("Reposts")
-  parentPostId String?     @db.Uuid
-  parentPost   Post?       @relation("PostComments", fields: [parentPostId], references: [id])
-  comments     Post[]      @relation("PostComments")
-  Like         Like[]
-  SavedPost    SavedPost[]
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  desc          String?
+  img           String?
+  imgHeight     Int?
+  imgWidth      Int?
+  video         String?
+  isSensitive   Boolean     @default(false)
+  transformType String?
+  userId        String
+  repostId      String?     @db.Uuid
+  repost        Post?       @relation("Reposts", fields: [repostId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  reposts       Post[]      @relation("Reposts")
+  parentPostId  String?     @db.Uuid
+  parentPost    Post?       @relation("PostComments", fields: [parentPostId], references: [id])
+  comments      Post[]      @relation("PostComments")
+  Like          Like[]
+  SavedPost     SavedPost[]
 }
 
 model Like {

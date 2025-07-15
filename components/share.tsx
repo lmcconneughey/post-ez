@@ -94,11 +94,22 @@ const Share = () => {
             });
             if (!result.url)
                 throw new Error('Image upload failed: Missing URL');
+            const uploadedImgWidth =
+                isImage && result.width !== undefined
+                    ? Number(result.width)
+                    : null;
+            const uploadedImgHeight =
+                isImage && result.height !== undefined
+                    ? Number(result.height)
+                    : null;
+
             await addPost({
                 desc,
                 fileUrl: result.url,
                 fileType: file.type,
                 isSensitive: settings.sensitive,
+                imgHeight: uploadedImgHeight,
+                imgWidth: uploadedImgWidth,
                 transformType: settings.type,
             });
 
@@ -111,6 +122,7 @@ const Share = () => {
                 type: 'origional',
                 sensitive: false,
             });
+            setDesc('');
         } catch (err) {
             console.error('Upload failed:', err);
             alert('Upload failed');

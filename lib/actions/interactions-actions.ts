@@ -150,12 +150,16 @@ export const addPost = async ({
     fileType,
     isSensitive,
     transformType,
+    imgHeight,
+    imgWidth,
 }: {
     desc: string;
     fileUrl: string;
     fileType: string;
     isSensitive: boolean;
     transformType: 'origional' | 'wide' | 'square';
+    imgHeight: number | null;
+    imgWidth: number | null;
 }) => {
     const { userId } = await auth();
 
@@ -176,9 +180,13 @@ export const addPost = async ({
                 img: fileType.startsWith('image/') ? fileUrl : null,
                 video: fileType.startsWith('video/') ? fileUrl : null,
                 isSensitive,
-                transformation: transformType,
+                transformType,
+                imgHeight,
+                imgWidth,
             },
         });
+
+        revalidatePath(`/`);
     } catch (error) {
         console.error('Failed to create post:', error);
         throw new Error('Post creation failed');
