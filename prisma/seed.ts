@@ -26,24 +26,49 @@ async function main() {
 
     console.log('Seeding posts...');
     const posts = [];
+    const transformTypes = ['origional', 'wide', 'square'] as const;
+
     for (let i = 0; i < users.length; i++) {
         for (let j = 1; j <= 5; j++) {
-            const hasImage = faker.datatype.boolean(); // Determine if post has an image
+            const hasImage = faker.datatype.boolean();
+            const selectedTransformType =
+                faker.helpers.arrayElement(transformTypes);
+
+            let imgWidth: number | null = null;
+            let imgHeight: number | null = null;
+
+            if (hasImage) {
+                imgWidth = 600;
+
+                switch (selectedTransformType) {
+                    case 'square':
+                        imgHeight = 600;
+                        break;
+                    case 'wide':
+                        imgHeight = Math.round(600 * (9 / 16));
+                        break;
+                    case 'origional':
+                    default:
+                        imgHeight = faker.number.int({ min: 400, max: 600 });
+                        break;
+                }
+            }
+
             const post = await prisma.post.create({
                 data: {
                     desc: `Post ${j} by ${users[i].userName}`,
                     userId: users[i].id,
-                    img: hasImage // Only provide img if hasImage is true
+                    img: hasImage
                         ? faker.image.urlPicsumPhotos({
-                              width: 600,
-                              height: 400,
+                              width: imgWidth || 600,
+                              height: imgHeight || 400,
                           })
                         : null,
-                    imgHeight: hasImage // FIX: Provide imgHeight only if image exists
-                        ? faker.number.int({ min: 200, max: 600 }) // Random height for image
-                        : null, // Set to null if no image
+                    imgWidth: imgWidth,
+                    imgHeight: imgHeight,
                     video: null,
                     isSensitive: faker.datatype.boolean(0.1),
+                    transformType: hasImage ? selectedTransformType : null,
                 },
             });
             posts.push(post);
@@ -78,20 +103,45 @@ async function main() {
     console.log('Seeding comments...');
     const comments = [];
     for (let i = 0; i < posts.length; i++) {
-        const hasImage = faker.datatype.boolean(0.3); // Comments can also have images
+        const hasImage = faker.datatype.boolean(0.3);
+        const selectedTransformType =
+            faker.helpers.arrayElement(transformTypes);
+
+        let imgWidth: number | null = null;
+        let imgHeight: number | null = null;
+
+        if (hasImage) {
+            imgWidth = 400;
+            switch (selectedTransformType) {
+                case 'square':
+                    imgHeight = 400;
+                    break;
+                case 'wide':
+                    imgHeight = Math.round(400 * (9 / 16));
+                    break;
+                case 'origional':
+                default:
+                    imgHeight = faker.number.int({ min: 500, max: 600 });
+                    break;
+            }
+        }
+
         const comment = await prisma.post.create({
             data: {
                 desc: `Comment on Post ${posts[i].id} by ${users[(i + 1) % 5].userName}`,
                 userId: users[(i + 1) % 5].id,
                 parentPostId: posts[i].id,
                 img: hasImage
-                    ? faker.image.urlPicsumPhotos({ width: 400, height: 300 })
+                    ? faker.image.urlPicsumPhotos({
+                          width: imgWidth || 600,
+                          height: imgHeight || 600,
+                      })
                     : null,
-                imgHeight: hasImage
-                    ? faker.number.int({ min: 150, max: 400 })
-                    : null,
+                imgWidth: imgWidth,
+                imgHeight: imgHeight,
                 video: null,
                 isSensitive: faker.datatype.boolean(0.05),
+                transformType: hasImage ? selectedTransformType : null,
             },
         });
         comments.push(comment);
@@ -101,20 +151,45 @@ async function main() {
     console.log('Seeding reposts...');
     const reposts = [];
     for (let i = 0; i < posts.length; i++) {
-        const hasImage = faker.datatype.boolean(0.2); // Reposts can also have images
+        const hasImage = faker.datatype.boolean(0.2);
+        const selectedTransformType =
+            faker.helpers.arrayElement(transformTypes);
+
+        let imgWidth: number | null = null;
+        let imgHeight: number | null = null;
+
+        if (hasImage) {
+            imgWidth = 600;
+            switch (selectedTransformType) {
+                case 'square':
+                    imgHeight = 500;
+                    break;
+                case 'wide':
+                    imgHeight = Math.round(500 * (9 / 16));
+                    break;
+                case 'origional':
+                default:
+                    imgHeight = faker.number.int({ min: 500, max: 600 });
+                    break;
+            }
+        }
+
         const repost = await prisma.post.create({
             data: {
                 desc: `Repost of Post ${posts[i].id} by ${users[(i + 2) % 5].userName}`,
                 userId: users[(i + 2) % 5].id,
                 repostId: posts[i].id,
                 img: hasImage
-                    ? faker.image.urlPicsumPhotos({ width: 500, height: 350 })
+                    ? faker.image.urlPicsumPhotos({
+                          width: imgWidth || 500,
+                          height: imgHeight || 350,
+                      })
                     : null,
-                imgHeight: hasImage
-                    ? faker.number.int({ min: 180, max: 500 })
-                    : null,
+                imgWidth: imgWidth,
+                imgHeight: imgHeight,
                 video: null,
                 isSensitive: faker.datatype.boolean(0.08),
+                transformType: hasImage ? selectedTransformType : null,
             },
         });
         reposts.push(repost);

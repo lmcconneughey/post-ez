@@ -61,82 +61,87 @@ const Share = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) return alert('Please select an image to upload.');
 
-        try {
+        if (!file && !desc.trim()) {
+            alert('Please enter a description or select media to upload.');
+        }
+        if (file) {
             setIsPosting(true);
 
-            // Get auth params
-            const authRes = await fetch('/api/upload-auth');
-            const { token, signature, expire, publicKey } =
-                await authRes.json();
+            try {
+                // Get auth params
+                const authRes = await fetch('/api/upload-auth');
+                const { token, signature, expire, publicKey } =
+                    await authRes.json();
 
-            const isImage = file.type.startsWith('image/');
+                const isImage = file.type.startsWith('image/');
 
-            // Upload to ImageKit
-            const result = await upload({
-                file,
-                fileName: file.name,
-                token,
-                signature,
-                expire,
-                publicKey,
-                folder: 'posts',
-                ...(isImage && {
-                    // videos are too expensive
-                    transformation: {
-                        pre: getTransformations(),
+                // Upload to ImageKit
+                const result = await upload({
+                    file,
+                    fileName: file.name,
+                    token,
+                    signature,
+                    expire,
+                    publicKey,
+                    folder: 'posts',
+                    ...(isImage && {
+                        // videos are too expensive
+                        transformation: {
+                            pre: getTransformations(),
+                        },
+                    }),
+                    customMetadata: {
+                        sensitive: settings.sensitive,
                     },
-                }),
-                customMetadata: {
-                    sensitive: settings.sensitive,
-                },
-            });
-            if (!result.url)
-                throw new Error('Image upload failed: Missing URL');
-            const uploadedImgWidth =
-                isImage && result.width !== undefined
-                    ? Number(result.width)
-                    : null;
-            const uploadedImgHeight =
-                isImage && result.height !== undefined
-                    ? Number(result.height)
-                    : null;
+                });
+                if (!result.url)
+                    throw new Error('Image upload failed: Missing URL');
+                const uploadedImgWidth =
+                    isImage && result.width !== undefined
+                        ? Number(result.width)
+                        : null;
+                const uploadedImgHeight =
+                    isImage && result.height !== undefined
+                        ? Number(result.height)
+                        : null;
 
+                await addPost({
+                    desc,
+                    fileUrl: result.url,
+                    fileType: file.type,
+                    isSensitive: settings.sensitive,
+                    imgHeight: uploadedImgHeight,
+                    imgWidth: uploadedImgWidth,
+                    transformType: settings.type,
+                });
+
+                console.log('Uploaded URL:', result);
+                alert('Upload successful!'); // for testing
+
+                // Reset state
+                setDesc('');
+                resetMedia();
+                setSettings({
+                    type: 'origional',
+                    sensitive: false,
+                });
+            } catch (err) {
+                console.error('Upload failed:', err);
+                alert('Upload failed');
+            } finally {
+                setIsPosting(false);
+            }
+        } else {
             await addPost({
                 desc,
-                fileUrl: result.url,
-                fileType: file.type,
-                isSensitive: settings.sensitive,
-                imgHeight: uploadedImgHeight,
-                imgWidth: uploadedImgWidth,
-                transformType: settings.type,
             });
-
-            console.log('Uploaded URL:', result);
-            alert('Upload successful!'); // for testing
-
             // Reset state
-            resetMedia();
-            setSettings({
-                type: 'origional',
-                sensitive: false,
-            });
             setDesc('');
-        } catch (err) {
-            console.error('Upload failed:', err);
-            alert('Upload failed');
-        } finally {
-            setIsPosting(false);
         }
     };
 
     const { user } = useUser();
-
-    // const [state, formAction, isPending] = useActionState(addPost, {
-    //     success: false,
-    //     error: false,
-    // });
 
     return (
         <form className='p-4 flex gap-4' onSubmit={handleSubmit}>
@@ -159,6 +164,7 @@ const Share = () => {
                     onChange={(e) => setDesc(e.target.value)}
                     type='text'
                     name='desc'
+                    value={desc}
                     placeholder='What is happening?!'
                     className='bg-transparent outline-none placeholder:text-textGray text-xl'
                 />

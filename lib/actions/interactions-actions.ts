@@ -154,16 +154,19 @@ export const addPost = async ({
     imgWidth,
 }: {
     desc: string;
-    fileUrl: string;
-    fileType: string;
-    isSensitive: boolean;
-    transformType: 'origional' | 'wide' | 'square';
-    imgHeight: number | null;
-    imgWidth: number | null;
+    fileUrl?: string;
+    fileType?: string;
+    isSensitive?: boolean;
+    transformType?: 'origional' | 'wide' | 'square';
+    imgHeight?: number | null;
+    imgWidth?: number | null;
 }) => {
     const { userId } = await auth();
 
     if (!userId) throw new Error('User not authorized');
+
+    if (!fileUrl && !desc) throw new Error('Post must have content');
+
     const validatedFields = postZodSchema.safeParse({
         isSensitive,
         desc,
@@ -177,12 +180,14 @@ export const addPost = async ({
             data: {
                 userId,
                 desc,
-                img: fileType.startsWith('image/') ? fileUrl : null,
-                video: fileType.startsWith('video/') ? fileUrl : null,
-                isSensitive,
-                transformType,
-                imgHeight,
-                imgWidth,
+                ...(fileUrl && {
+                    img: fileType?.startsWith('image/') ? fileUrl : null,
+                    video: fileType?.startsWith('video/') ? fileUrl : null,
+                    imgWidth: imgWidth,
+                    imgHeight: imgHeight,
+                    transformType: transformType,
+                }),
+                isSensitive: isSensitive ?? false,
             },
         });
 
