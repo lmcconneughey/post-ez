@@ -5,7 +5,7 @@ import ImageComponent from './image';
 import Post from './post';
 import { Post as PrismaPost } from '@prisma/client';
 import { useActionState } from 'react';
-import { addComment } from '../lib/actions/interactions-actions';
+import { addCommentAction } from '../lib/actions/interactions-actions';
 
 type CommentWithDetails = PrismaPost & {
     user: {
@@ -34,7 +34,7 @@ const Comments = ({
 }) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
-    const [state, formAction, isPending] = useActionState(addComment, {
+    const [state, formAction, isPending] = useActionState(addCommentAction, {
         success: false,
         error: false,
     });
