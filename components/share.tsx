@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { upload } from '@imagekit/next';
 import ImageEditor from './image-editor';
 import { useUser } from '@clerk/nextjs';
-import { addPost } from '../lib/actions/interactions-actions';
+import { addPostAction } from '../lib/actions/interactions-actions';
 //import { shareAction } from "../actions/share-actions";
 
 const Share = () => {
@@ -66,9 +66,9 @@ const Share = () => {
             alert('Please enter a description or select media to upload.');
         }
         if (file) {
-            setIsPosting(true);
-
             try {
+                setIsPosting(true);
+
                 // Get auth params
                 const authRes = await fetch('/api/upload-auth');
                 const { token, signature, expire, publicKey } =
@@ -106,7 +106,7 @@ const Share = () => {
                         ? Number(result.height)
                         : null;
 
-                await addPost({
+                await addPostAction({
                     desc,
                     fileUrl: result.url,
                     fileType: file.type,
@@ -133,9 +133,10 @@ const Share = () => {
                 setIsPosting(false);
             }
         } else {
-            await addPost({
+            await addPostAction({
                 desc,
             });
+            alert('Post successful!');
             // Reset state
             setDesc('');
         }
@@ -276,7 +277,7 @@ const Share = () => {
                     </div>
                     <button
                         type='submit'
-                        disabled={isPosting}
+                        disabled={isPosting || (!file && !desc.trim())} //<< maybe too much..
                         className='bg-white text-black rounded-full py-2 px-4'
                     >
                         {isPosting ? 'Posting...' : 'Post'}
