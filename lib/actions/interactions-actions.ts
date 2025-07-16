@@ -5,6 +5,7 @@ import { prisma } from '../../db/prisma';
 import { commentZodSchema, postZodSchema } from '../validators';
 import { revalidatePath } from 'next/cache';
 
+// action to like a post
 export const likePostAction = async (postId: string) => {
     const { userId } = await auth();
 
@@ -37,13 +38,14 @@ export const likePostAction = async (postId: string) => {
         //return { success: false, message: 'Could not like post' };
     }
 };
+
+// action for repost
 export const rePostAction = async (postId: string) => {
     const { userId } = await auth();
 
     if (!userId) throw new Error('User not authorised');
 
     try {
-        // check for existing Like
         const existingRepost = await prisma.post.findFirst({
             where: {
                 userId,
@@ -51,7 +53,6 @@ export const rePostAction = async (postId: string) => {
             },
         });
 
-        // delete like or add like "toggle"
         if (existingRepost) {
             await prisma.post.delete({
                 where: { id: existingRepost.id },
@@ -66,9 +67,10 @@ export const rePostAction = async (postId: string) => {
         }
     } catch (error) {
         console.log(`Error rePosting`, error);
-        //return { success: false, message: 'Could not like post' };
     }
 };
+
+// action for saved post
 export const savedPostAction = async (postId: string) => {
     const { userId } = await auth();
 
@@ -102,7 +104,8 @@ export const savedPostAction = async (postId: string) => {
     }
 };
 
-export const addComment = async (
+// add comment action
+export const addCommentAction = async (
     prevState: { success: boolean; error: boolean },
     formData: FormData,
 ) => {
@@ -144,7 +147,9 @@ export const addComment = async (
         };
     }
 };
-export const addPost = async ({
+
+// add post action
+export const addPostAction = async ({
     desc,
     fileUrl,
     fileType,
@@ -195,5 +200,38 @@ export const addPost = async ({
     } catch (error) {
         console.error('Failed to create post:', error);
         throw new Error('Post creation failed');
+    }
+};
+
+export const followUserAction = async (targetUserId: string) => {
+    const { userId } = await auth();
+
+    if (!userId) throw new Error('User not authorised');
+
+    try {
+        // check if we are following target user
+        const existingFollow = await prisma.follow.findFirst({
+            where: {
+                followerId: userId,
+                followingId: targetUserId,
+            },
+        });
+
+        // delete follow or add follow "toggle"
+        if (existingFollow) {
+            await prisma.follow.delete({
+                where: { id: existingFollow.id },
+            });
+        } else {
+            await prisma.follow.create({
+                data: {
+                    followerId: userId,
+                    followingId: targetUserId,
+                },
+            });
+        }
+    } catch (error) {
+        console.log(`Error liking post`, error);
+        //return { success: false, message: 'Could not like post' };
     }
 };
