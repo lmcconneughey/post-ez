@@ -13,6 +13,7 @@ import {
     MoreHorizontal,
     ListPlus,
 } from 'lucide-react';
+import Socket from './socket';
 
 const menuList = [
     {
@@ -140,6 +141,7 @@ const LeftBar = () => {
                     ...
                 </div>
             </div>
+            <Socket />
         </div>
     );
 };
