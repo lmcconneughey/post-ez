@@ -1,57 +1,81 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../../db/prisma';
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { POSTS_PER_PAGE } from '../../../lib/constants';
 
-export async function GET(request: NextRequest) {
-    const searchParams = request.nextUrl.searchParams;
-    const userProfileId = searchParams.get('user');
-    const page = Number(searchParams.get('cursor') || '1'); // fallback
-    const LIMIT = 3;
+export async function GET(request: Request) {
+    const { userId: currentAuthUserId } = await auth();
+    const searchParams = new URL(request.url).searchParams;
+    console.log('post search parm: ' + searchParams);
 
-    const { userId } = await auth();
+    const take = parseInt(
+        searchParams.get('take') || POSTS_PER_PAGE.toString(),
+        10,
+    ); // interpret the string as a decimal (base-10) number
+    const skip = parseInt(searchParams.get('skip') || '0', 10);
 
-    if (!userId) {
-        console.log('Feed: No userId found (user not authenticated).');
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-            status: 401,
-        });
+    const userProfileId = searchParams.get('userProfileId');
+    const currentUserIdFromClient = searchParams.get('currentUserId');
+
+    if (!currentAuthUserId && !currentUserIdFromClient && !userProfileId) {
+        console.log('No user found (user not authenticated).');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const isProfileFeed =
-        userProfileId &&
-        userProfileId !== 'undefined' &&
-        userProfileId !== 'null';
-    const whereCondition = isProfileFeed
-        ? { parentPostId: null, userId: userProfileId }
-        : {
-              parentPostId: null,
-              userId: {
-                  in: [
-                      userId,
-                      ...(
-                          await prisma.follow.findMany({
-                              where: { followerId: userId },
-                              select: { followingId: true },
-                          })
-                      ).map((f) => f.followingId),
-                  ],
-              },
-          };
     try {
+        let userIdsToFetch: string[] = [];
+
+        if (userProfileId) {
+            userIdsToFetch = [userProfileId];
+        } else if (currentUserIdFromClient) {
+            userIdsToFetch.push(currentUserIdFromClient);
+            // fetch Id of users the current user follows
+            const followedUsers = await prisma.follow.findMany({
+                where: {
+                    followerId: currentUserIdFromClient,
+                },
+                select: {
+                    followingId: true,
+                },
+            });
+            const followingIds = followedUsers.map(
+                (follow) => follow.followingId,
+            );
+            userIdsToFetch.push(...followingIds);
+            // make sure ids are unique
+            userIdsToFetch = Array.from(new Set(userIdsToFetch));
+        } else {
+            // if we get here, you messed up
+            return NextResponse.json([]);
+        }
+
         const posts = await prisma.post.findMany({
-            where: whereCondition,
+            where: {
+                parentPostId: null, // top level post
+                userId: {
+                    in: userIdsToFetch,
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: take,
+            skip: skip,
             include: {
                 user: {
                     select: {
-                        displayName: true,
+                        id: true,
                         userName: true,
+                        displayName: true,
                         img: true,
                     },
                 },
                 repost: {
+                    // if repost include
                     include: {
                         user: {
                             select: {
+                                id: true,
                                 displayName: true,
                                 userName: true,
                                 img: true,
@@ -66,7 +90,7 @@ export async function GET(request: NextRequest) {
                         },
                         Like: {
                             where: {
-                                userId, // userId : current userId
+                                userId: currentAuthUserId ?? undefined,
                             },
                             select: {
                                 id: true, // if the id exists, user already liked post
@@ -74,7 +98,7 @@ export async function GET(request: NextRequest) {
                         },
                         reposts: {
                             where: {
-                                userId, // userId : current userId
+                                userId: currentAuthUserId ?? undefined,
                             },
                             select: {
                                 id: true, // if the id exists, user already liked post
@@ -82,7 +106,7 @@ export async function GET(request: NextRequest) {
                         },
                         SavedPost: {
                             where: {
-                                userId, // userId : current userId
+                                userId: currentAuthUserId ?? undefined,
                             },
                             select: {
                                 id: true, // if the id exists, user already liked post
@@ -98,16 +122,17 @@ export async function GET(request: NextRequest) {
                     },
                 },
                 Like: {
+                    // check if current user liked post
                     where: {
-                        userId, // userId : current userId
+                        userId: currentAuthUserId ?? undefined,
                     },
                     select: {
-                        id: true, // if the id exists, user already liked post
+                        id: true,
                     },
                 },
                 reposts: {
                     where: {
-                        userId, // userId : current userId
+                        userId: currentAuthUserId ?? undefined,
                     },
                     select: {
                         id: true, // if the id exists, user already liked post
@@ -115,30 +140,38 @@ export async function GET(request: NextRequest) {
                 },
                 SavedPost: {
                     where: {
-                        userId, // userId : current userId
+                        userId: currentAuthUserId ?? undefined,
                     },
                     select: {
                         id: true, // if the id exists, user already liked post
                     },
                 },
             },
-            take: LIMIT,
-            skip: (Number(page) - 1) * LIMIT,
         });
 
-        const totalPosts = await prisma.post.count({
-            where: whereCondition,
+        const nextPosts = await prisma.post.count({
+            where: {
+                parentPostId: null,
+                userId: {
+                    in: userIdsToFetch,
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: take + 1,
+            skip: skip + take,
         });
 
-        const hasMore = Number(page) * LIMIT < totalPosts;
+        const hasMore = nextPosts > take;
 
         await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 seconds before infinite scroll update
 
-        return Response.json({ posts, hasMore });
+        return NextResponse.json({ posts, hasMore });
     } catch (error) {
         console.error('Error fetching posts: ', error);
-        return new Response(
-            JSON.stringify({ error: ' Failed to fetch posts' }),
+        return NextResponse.json(
+            { error: ' Failed to fetch posts' },
             {
                 status: 500,
             },

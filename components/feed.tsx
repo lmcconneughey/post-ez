@@ -1,8 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../db/prisma';
 import Post from './post';
-//import { Post as PrismaPostType } from '@prisma/client';
 import InfiniteFeed from './infiniteFeed';
+import { POSTS_PER_PAGE } from '../lib/constants';
 
 const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
     const { userId } = await auth();
@@ -46,7 +46,6 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                     img: true,
                 },
             },
-
             repost: {
                 include: {
                     user: {
@@ -64,28 +63,16 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                         },
                     },
                     Like: {
-                        where: {
-                            userId, // userId : current userId
-                        },
-                        select: {
-                            id: true, // if the id exists, user already liked post
-                        },
+                        where: { userId },
+                        select: { id: true },
                     },
                     reposts: {
-                        where: {
-                            userId, // userId : current userId
-                        },
-                        select: {
-                            id: true, // if the id exists, user already liked post
-                        },
+                        where: { userId },
+                        select: { id: true },
                     },
                     SavedPost: {
-                        where: {
-                            userId, // userId : current userId
-                        },
-                        select: {
-                            id: true, // if the id exists, user already liked post
-                        },
+                        where: { userId },
+                        select: { id: true },
                     },
                 },
             },
@@ -97,44 +84,32 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                 },
             },
             Like: {
-                where: {
-                    userId, // userId : current userId
-                },
-                select: {
-                    id: true, // if the id exists, user already liked post
-                },
+                where: { userId },
+                select: { id: true },
             },
             reposts: {
-                where: {
-                    userId, // userId : current userId
-                },
-                select: {
-                    id: true, // if the id exists, user already liked post
-                },
+                where: { userId },
+                select: { id: true },
             },
             SavedPost: {
-                where: {
-                    userId, // userId : current userId
-                },
-                select: {
-                    id: true, // if the id exists, user already liked post
-                },
+                where: { userId },
+                select: { id: true },
             },
         },
-        take: 3,
-        skip: 0,
+        take: POSTS_PER_PAGE,
         orderBy: { createdAt: 'desc' },
     });
+    const initialHasMore = posts.length === POSTS_PER_PAGE;
 
     return (
-        <div className=''>
-            {posts.map((post) => (
-                <div key={post.id}>
-                    <Post post={post} />
-                </div>
-            ))}
-            <InfiniteFeed />
-        </div>
+        // getting duplictae posts in feed. lets try to fix!!!
+        // initPost = first page of posts to be rendered on the server
+        // but reused on the client without duplicate fetches!
+        <InfiniteFeed
+            userProfileId={userProfileId}
+            initialPosts={posts}
+            initialHasMore={initialHasMore}
+        />
     );
 };
 
