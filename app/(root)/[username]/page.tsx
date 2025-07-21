@@ -21,9 +21,12 @@ const UserPage = async ({
     params: Promise<{ username: string }>;
 }) => {
     const { userId } = await auth();
+
+    const username = (await params).username;
+
     const user = await prisma.user.findUnique({
         where: {
-            userName: (await params).username,
+            userName: username,
         },
         include: {
             _count: {

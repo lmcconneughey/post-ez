@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { connectSocket } from '../lib/socket';
+import { useUser } from '@clerk/nextjs';
 
 export default function Socket() {
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState('N/A');
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
         const socket = connectSocket();
@@ -13,12 +15,7 @@ export default function Socket() {
             onConnect();
         }
         // test message
-        socket.emit('helloFromClient', { message: 'Hey server!' });
-
-        // echoed message from server
-        socket.on('chatMessage', (msg) => {
-            console.log('Received from server:', msg);
-        });
+        // socket.emit('helloFromClient', { message: 'Hey server!' });
 
         function onConnect() {
             setIsConnected(true);
@@ -27,6 +24,10 @@ export default function Socket() {
             socket.io.engine.on('upgrade', (transport) => {
                 setTransport(transport.name);
             });
+
+            if (user && isLoaded) {
+                socket.emit('newUser', user?.username);
+            }
         }
 
         function onDisconnect() {
@@ -42,7 +43,7 @@ export default function Socket() {
             socket.off('disconnect', onDisconnect);
             socket.off('chatMessage');
         };
-    }, []);
+    }, [user, isLoaded]);
 
     return (
         <div>
