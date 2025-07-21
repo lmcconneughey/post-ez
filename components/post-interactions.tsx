@@ -6,14 +6,18 @@ import {
     savedPostAction,
     rePostAction,
 } from '../lib/actions/interactions-actions';
+import { connectSocket } from '../lib/socket';
+import { useUser } from '@clerk/nextjs';
 
 const PostInteractions = ({
+    username,
     postId,
     count,
     isLiked,
     isReposted,
     isSaved,
 }: {
+    username: string;
     postId: string;
     count: { Like: number; reposts: number; comments: number };
     isLiked: boolean;
@@ -28,7 +32,22 @@ const PostInteractions = ({
         isSaved,
     });
 
+    const { user } = useUser();
+
     const handleLike = async () => {
+        if (!user) return;
+
+        const socket = connectSocket();
+        // send notification via socket.io
+        socket.emit('sendNotification', {
+            receiverUsername: username,
+            data: {
+                senderUsername: user.username,
+                type: 'Like',
+                link: `/${username}/status/${postId}`,
+            },
+        });
+
         setOptimisticCount('Like');
         await likePostAction(postId);
         setState((prev) => {
