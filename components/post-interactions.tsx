@@ -38,20 +38,17 @@ const PostInteractions = ({
     const handleLike = async () => {
         if (!user) return;
 
-        const socket = connectSocket();
-        // send notification via socket.io
-        console.log('sending notification with:', {
-            senderUsername: user.username,
-            receiverUsername: username,
-        });
-        socket.emit('sendNotification', {
-            receiverUsername: username,
-            data: {
-                senderUsername: user.username,
-                type: 'Like',
-                link: `/${username}/status/${postId}`,
-            },
-        });
+        if (!optimisticCount.isLiked) {
+            const socket = connectSocket();
+            socket.emit('sendNotification', {
+                receiverUsername: username,
+                data: {
+                    senderUsername: user.username,
+                    type: 'Like',
+                    link: `/${username}/status/${postId}`,
+                },
+            });
+        }
 
         setOptimisticCount('Like');
         await likePostAction(postId);
@@ -64,6 +61,18 @@ const PostInteractions = ({
         });
     };
     const handleReposts = async () => {
+        if (!user) return;
+        if (!optimisticCount.isReposted) {
+            const socket = connectSocket();
+            socket.emit('sendNotification', {
+                receiverUsername: username,
+                data: {
+                    senderUsername: user.username,
+                    type: 'reposts',
+                    link: `/${username}/status/${postId}`,
+                },
+            });
+        }
         setOptimisticCount('reposts');
         await rePostAction(postId);
         setState((prev) => {

@@ -46,7 +46,7 @@ const Comments = ({
                     action={formAction}
                     className='flex items-center justify-between gap-4 p-4'
                 >
-                    <div className='relative w-10 h-10 rounded-full overflow-hidden'>
+                    <div className='relative w-10 h-10 rounded-full overflow-hidden -z-10'>
                         <ImageComponent
                             path={user?.imageUrl}
                             alt='test avatar'
