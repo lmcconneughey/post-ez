@@ -4,8 +4,9 @@ import { useUser } from '@clerk/nextjs';
 import ImageComponent from './image';
 import Post from './post';
 import { Post as PrismaPost } from '@prisma/client';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { addCommentAction } from '../lib/actions/interactions-actions';
+import { connectSocket } from '../lib/socket';
 
 type CommentWithDetails = PrismaPost & {
     user: {
@@ -38,6 +39,26 @@ const Comments = ({
         success: false,
         error: false,
     });
+    useEffect(() => {
+        if (state.success) {
+            const socket = connectSocket();
+            socket.emit('sendNotification', {
+                receiverUsername: userName,
+                data: {
+                    senderUsername: user?.username,
+                    type: 'comment',
+                    link: `/${userName}/status/${postId}`,
+                },
+            });
+        }
+    }, [state.success, userName, user?.username, postId]);
+    console.log(
+        'comment useEffect dep info: ',
+        state.success,
+        userName,
+        user?.username,
+        postId,
+    );
 
     return (
         <div className=''>
