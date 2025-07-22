@@ -83,7 +83,7 @@ const Post = ({
                 {/* avatar */}
 
                 <div
-                    className={`${type === 'status' && 'hidden'} relative w-10 h-10 rounded-full overflow-x-hidden`}
+                    className={`${type === 'status' && 'hidden'} relative w-10 h-10 rounded-full overflow-x-hidden -z-10`}
                 >
                     <ImageComponent
                         path={
@@ -155,6 +155,7 @@ const Post = ({
                             w={600}
                             h={600}
                             tr={true}
+                            className='-z-10'
                         />
                     )}
                     {type === 'status' && (
