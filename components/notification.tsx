@@ -6,7 +6,7 @@ import { connectSocket } from '../lib/socket';
 
 type NotificationType = {
     id: string;
-    sendUsername: string;
+    senderUsername: string;
     type: 'Like' | 'comment' | 'reposts' | 'follow';
     link: string;
 };
@@ -18,13 +18,14 @@ const Notification = () => {
     useEffect(() => {
         const socket = connectSocket();
 
-        socket.on('getNotification', (data: NotificationType) => {
+        const handleGetNotification = (data: NotificationType) => {
             setNotifications((prev) => [...prev, data]);
-        });
+        };
+
+        socket.on('getNotification', handleGetNotification);
+
         return () => {
-            socket.off('getNotification', (data: NotificationType) => {
-                setNotifications((prev) => [...prev, data]);
-            });
+            socket.off('getNotification', handleGetNotification);
         };
     }, []);
     return (
@@ -41,7 +42,7 @@ const Notification = () => {
                     <h1 className='text-xl text-textGray'>Notifications</h1>
                     {notifications.map((n) => (
                         <div className='cursor-pointer' key={n.id}>
-                            <b>{n.sendUsername}</b>{' '}
+                            <b>{n.senderUsername}</b>{' '}
                             {n.type === 'Like'
                                 ? 'liked your post'
                                 : n.type === 'reposts'

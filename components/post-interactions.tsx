@@ -33,17 +33,21 @@ const PostInteractions = ({
     });
 
     const { user } = useUser();
-    console.log('from post interactions ' + user);
+    console.log(username);
 
     const handleLike = async () => {
         if (!user) return;
 
         const socket = connectSocket();
         // send notification via socket.io
+        console.log('sending notification with:', {
+            senderUsername: user.username,
+            receiverUsername: username,
+        });
         socket.emit('sendNotification', {
             receiverUsername: username,
             data: {
-                senderUsername: user?.username,
+                senderUsername: user.username,
                 type: 'Like',
                 link: `/${username}/status/${postId}`,
             },

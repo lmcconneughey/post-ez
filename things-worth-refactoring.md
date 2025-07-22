@@ -49,3 +49,11 @@
 
 - **Current**: None (yet).
 - **Refactor**: Add basic event logging to uploads, errors, sign-ins (even with `console.log()` for now).
+
+### 10. Use Constants/Enums for Shared Text
+
+- **Current**: Using plain text (strings) directly for things like event names ('newUser') or notification types ('Like').
+
+- **Refactor**: Create a file (e.g., lib/constants/events.ts) to store these strings as constants or enums.
+
+**Benefit**: If you make a typo (like 'lik' instead of 'Like'), your code editor will immediately tell you, saving you time from chasing down silent bugs.
