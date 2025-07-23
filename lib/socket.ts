@@ -9,7 +9,8 @@ export const connectSocket = (): Socket => {
         const WS_URL =
             process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
         socket = io(WS_URL, {
-            // transports: ['websocket'],
+            transports: ['websocket'],
+            withCredentials: true,
         });
         socket.on('connect', () => {
             console.log('CLIENT: Socket.IO connected successfully!');
