@@ -33,7 +33,7 @@ const Comments = ({
     postId: string;
     userName: string;
 }) => {
-    const { isLoaded, isSignedIn, user } = useUser();
+    const { user } = useUser();
 
     const [state, formAction, isPending] = useActionState(addCommentAction, {
         success: false,

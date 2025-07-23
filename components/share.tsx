@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useActionState, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ImageComponent from './image';
 import {
     Image as ImageIcon,

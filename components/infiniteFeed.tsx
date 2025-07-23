@@ -45,39 +45,33 @@ const InfiniteFeed = ({
 
         return data; // strict
     };
-    const {
-        data,
-        error,
-        fetchStatus,
-        hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage,
-    } = useInfiniteQuery<
-        PostsPage,
-        Error,
-        InfiniteData<PostsPage>,
-        (string | null)[],
-        number
-    >({
-        queryKey: ['posts', userProfileId ?? null, user?.id ?? null],
-        queryFn: fetchPosts,
-        initialPageParam: POSTS_PER_PAGE, // skip value for first client side fetch
-        getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.hasMore) {
-                return allPages.length * POSTS_PER_PAGE;
-            }
-            return undefined; // no more pages
-        },
-        initialData: {
-            // initial data from server
-            pages: [{ posts: initialPosts, hasMore: initialHasMore }],
-            pageParams: [0],
-        },
+    const { data, error, fetchStatus, hasNextPage, fetchNextPage } =
+        useInfiniteQuery<
+            PostsPage,
+            Error,
+            InfiniteData<PostsPage>,
+            (string | null)[],
+            number
+        >({
+            queryKey: ['posts', userProfileId ?? null, user?.id ?? null],
+            queryFn: fetchPosts,
+            initialPageParam: POSTS_PER_PAGE, // skip value for first client side fetch
+            getNextPageParam: (lastPage, allPages) => {
+                if (lastPage.hasMore) {
+                    return allPages.length * POSTS_PER_PAGE;
+                }
+                return undefined; // no more pages
+            },
+            initialData: {
+                // initial data from server
+                pages: [{ posts: initialPosts, hasMore: initialHasMore }],
+                pageParams: [0],
+            },
 
-        // controle background refetch
-        staleTime: 1000 * 60 * 5, // stay fresh for 5 min for faster UI
-        gcTime: 1000 * 60 * 10, // garbage collected
-    });
+            // controle background refetch
+            staleTime: 1000 * 60 * 5, // stay fresh for 5 min for faster UI
+            gcTime: 1000 * 60 * 10, // garbage collected
+        });
     const allPosts = data?.pages?.flatMap((page) => page.posts) || [];
 
     if (!isLoaded) {
