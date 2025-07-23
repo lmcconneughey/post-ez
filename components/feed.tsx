@@ -1,6 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../db/prisma';
-import Post from './post';
 import InfiniteFeed from './infiniteFeed';
 import { POSTS_PER_PAGE } from '../lib/constants';
 
@@ -102,9 +101,6 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
     const initialHasMore = posts.length === POSTS_PER_PAGE;
 
     return (
-        // getting duplictae posts in feed. lets try to fix!!!
-        // initPost = first page of posts to be rendered on the server
-        // but reused on the client without duplicate fetches!
         <InfiniteFeed
             userProfileId={userProfileId}
             initialPosts={posts}

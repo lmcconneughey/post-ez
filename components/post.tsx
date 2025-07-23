@@ -1,12 +1,11 @@
 import Link from 'next/link';
-//import { imagekit } from '../utils';
 import ImageComponent from './image';
 import PostInfo from './post-info';
 import PostInteractions from './post-interactions';
 import { Post as PrismaPost } from '@prisma/client';
 import { format } from 'timeago.js';
-
 //import Video from './video';
+
 type PostDetails = PrismaPost & {
     user: {
         displayName: string | null;

@@ -96,7 +96,7 @@ const LeftBar = () => {
                 {/* menu list*/}
                 <div className='flex flex-col gap-2'>
                     {menuList.map((item, index) => (
-                        <div key={index}>
+                        <div key={item.id || index}>
                             {index === 2 && (
                                 <div>
                                     <Notification />
@@ -104,7 +104,6 @@ const LeftBar = () => {
                             )}
                             <Link
                                 href={item.link}
-                                key={item.id}
                                 className='p-2 rounded-full hover:bg-[#181818] flex items-center gap-4'
                             >
                                 <item.icon />
