@@ -15,6 +15,8 @@ import {
 import Socket from './socket';
 import Notification from './notification';
 import { SignOutButton } from './sign-out';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '../db/prisma';
 
 const menuList = [
     {
@@ -79,7 +81,25 @@ const menuList = [
     },
 ];
 
-const LeftBar = () => {
+const LeftBar = async () => {
+    const { userId } = await auth();
+
+    if (!userId) {
+        console.log('Feed: No userId found (user not authenticated).');
+        return null;
+    }
+    const user = await prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            img: true,
+            userName: true,
+            displayName: true,
+        },
+    });
+    if (!user) throw new Error('No user found');
+
     return (
         <div className='sticky top-0 h-screen flex flex-col justify-between pt-2 pb-8'>
             {/* logo menu button */}
@@ -131,8 +151,7 @@ const LeftBar = () => {
             </div>
             <Socket />
             {/* user */}
-
-            <SignOutButton />
+            <SignOutButton userData={user} />
         </div>
     );
 };
