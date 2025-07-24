@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import Socket from './socket';
 import Notification from './notification';
+import { SignOutButton } from './sign-out';
 
 const menuList = [
     {
@@ -128,26 +129,10 @@ const LeftBar = () => {
                     Post
                 </Link>
             </div>
-            {/* user */}
-            <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-2'>
-                    <div className='w-10 h-10 relative rounded-full overflow-hidden'>
-                        <Image
-                            src='/general/profile.jpeg'
-                            alt='profile-pic'
-                            fill
-                        />
-                    </div>
-                    <div className='hidden 2xl:flex flex-col'>
-                        <span className='font-bold'>LarryDev</span>
-                        <span className='text-sm text-textGray'>@LarryDev</span>
-                    </div>
-                </div>
-                <div className='hidden 2xl:block cursor-pointer font-bold'>
-                    ...
-                </div>
-            </div>
             <Socket />
+            {/* user */}
+
+            <SignOutButton />
         </div>
     );
 };
