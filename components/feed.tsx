@@ -38,22 +38,10 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
     const posts = await prisma.post.findMany({
         where: whereCondition,
         include: {
-            user: {
-                select: {
-                    displayName: true,
-                    userName: true,
-                    img: true,
-                },
-            },
+            user: true,
             repost: {
                 include: {
-                    user: {
-                        select: {
-                            displayName: true,
-                            userName: true,
-                            img: true,
-                        },
-                    },
+                    user: true,
                     _count: {
                         select: {
                             Like: true,
@@ -61,18 +49,9 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                             comments: true,
                         },
                     },
-                    Like: {
-                        where: { userId },
-                        select: { id: true },
-                    },
-                    reposts: {
-                        where: { userId },
-                        select: { id: true },
-                    },
-                    SavedPost: {
-                        where: { userId },
-                        select: { id: true },
-                    },
+                    Like: true,
+                    reposts: true,
+                    SavedPost: true,
                 },
             },
             _count: {
@@ -82,18 +61,9 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
                     comments: true,
                 },
             },
-            Like: {
-                where: { userId },
-                select: { id: true },
-            },
-            reposts: {
-                where: { userId },
-                select: { id: true },
-            },
-            SavedPost: {
-                where: { userId },
-                select: { id: true },
-            },
+            Like: true,
+            reposts: true,
+            SavedPost: true,
         },
         take: POSTS_PER_PAGE,
         orderBy: { createdAt: 'desc' },
