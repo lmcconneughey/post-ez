@@ -2,7 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../db/prisma';
-import { commentZodSchema, postZodSchema } from '../validators';
+import { commentZodSchema } from '../validators';
 import { revalidatePath } from 'next/cache';
 import { PostWithRelations } from '../../types';
 
@@ -194,6 +194,7 @@ export const addPostAction = async ({
                 Like: true,
                 repost: true,
                 SavedPost: true,
+                reposts: true,
                 _count: {
                     select: {
                         Like: true,

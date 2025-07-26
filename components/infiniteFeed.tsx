@@ -28,7 +28,7 @@ const InfiniteFeed = ({
     userProfileId,
     initialPosts,
     initialHasMore,
-    userId, // Still available in props if needed elsewhere, but Clerk's user.id is used for queries
+    //userId, // Still available in props if needed elsewhere, but Clerk's user.id is used for queries
 }: InfiniteFeedProps) => {
     const queryClient = useQueryClient();
     const { user, isLoaded, isSignedIn } = useUser();
