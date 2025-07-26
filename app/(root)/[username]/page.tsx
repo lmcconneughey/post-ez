@@ -9,6 +9,7 @@ import {
     Search,
 } from 'lucide-react';
 import Feed from '../../../components/feed';
+import Share from '../../../components/share';
 import { prisma } from '../../../db/prisma';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
@@ -144,6 +145,7 @@ const UserPage = async ({
                     </div>
                 </div>
             </div>
+            {userId === user.id && <Share userProfileId={user.id} />}
             {/* feed */}
             <Feed userProfileId={user.id} />
         </div>

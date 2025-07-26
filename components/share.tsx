@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
+import { PostContext } from './infiniteFeed';
 import ImageComponent from './image';
 import {
     Image as ImageIcon,
@@ -14,9 +15,10 @@ import { upload } from '@imagekit/next';
 import ImageEditor from './image-editor';
 import { useUser } from '@clerk/nextjs';
 import { addPostAction } from '../lib/actions/interactions-actions';
-//import { shareAction } from "../actions/share-actions";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AddPostInput, AddPostResult } from '../types';
 
-const Share = () => {
+const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -28,8 +30,67 @@ const Share = () => {
         type: 'origional',
         sensitive: false,
     });
-    const [isPosting, setIsPosting] = useState(false);
+
+    const [clientError, setClientError] = useState<string | null>(null);
+    const { user } = useUser();
     const inputRef = useRef<HTMLInputElement>(null);
+    const postContext = useContext(PostContext);
+    const queryClient = useQueryClient();
+
+    const addPostMutation = useMutation<AddPostResult, Error, AddPostInput>({
+        mutationFn: addPostAction,
+        onSuccess: (data) => {
+            if (data.success) {
+                if (postContext && data.post) {
+                    postContext.addPost(data.post); // This is where PostWithRelations is now "used"
+                    console.log(
+                        'Post added successfully via PostContext for instant update.',
+                    );
+                } else {
+                    // Fallback to query invalidation if context isn't available
+                    queryClient.invalidateQueries({
+                        queryKey: [
+                            'posts',
+                            userProfileId ?? null,
+                            user?.id ?? null,
+                        ],
+                    });
+                    console.warn(
+                        'PostContext not available or post data missing, falling back to query invalidation.',
+                    );
+                }
+
+                // Clear the form after successful submission
+                setDesc('');
+                resetMedia();
+                setSettings({
+                    type: 'origional',
+                    sensitive: false,
+                });
+
+                console.log(
+                    'Post added successfully! Feed will update immediately.',
+                );
+
+                console.log('Post added successfully! Feed will update.');
+            } else {
+                console.error('Failed to add post (server-side):', data.error);
+                setClientError(data.error); // Display server-provided error
+            }
+        },
+        onError: (error) => {
+            // Handle unexpected errors
+            console.error(
+                'An unexpected error occurred during post creation:',
+                error,
+            );
+            setClientError(
+                error.message || 'Failed to create post. Please try again.',
+            );
+            // toast.error(`Failed to create post: ${error.message || 'Please try again.'}`);
+        },
+        onSettled: () => {},
+    });
 
     const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -39,6 +100,7 @@ const Share = () => {
         ) {
             setFile(selectedFile);
             setPreviewUrl(URL.createObjectURL(selectedFile));
+            setClientError(null);
         }
     };
     const resetMedia = () => {
@@ -64,19 +126,36 @@ const Share = () => {
 
         if (!file && !desc.trim()) {
             alert('Please enter a description or select media to upload.');
+            return;
         }
+        setClientError(null);
+
+        if (addPostMutation.isPending) {
+            console.log(
+                'Mutation is already pending, preventing duplicate submission.',
+            );
+            return;
+        }
+        let uploadedFileUrl: string | undefined = undefined;
+        let uploadedFileType: string | undefined = undefined;
+        let uploadedImgHeight: number | undefined = undefined;
+        let uploadedImgWidth: number | undefined = undefined;
+        let uploadedTransformType: 'origional' | 'wide' | 'square' | undefined =
+            undefined;
+
         if (file) {
             try {
-                setIsPosting(true);
-
-                // Get auth params
                 const authRes = await fetch('/api/upload-auth');
+                if (!authRes.ok) {
+                    throw new Error(
+                        `Failed to get upload authorization: ${authRes.statusText}`,
+                    );
+                }
                 const { token, signature, expire, publicKey } =
                     await authRes.json();
 
                 const isImage = file.type.startsWith('image/');
 
-                // Upload to ImageKit
                 const result = await upload({
                     file,
                     fileName: file.name,
@@ -86,7 +165,6 @@ const Share = () => {
                     publicKey,
                     folder: 'posts',
                     ...(isImage && {
-                        // videos are too expensive
                         transformation: {
                             pre: getTransformations(),
                         },
@@ -95,54 +173,44 @@ const Share = () => {
                         sensitive: settings.sensitive,
                     },
                 });
-                if (!result.url)
-                    throw new Error('Image upload failed: Missing URL');
-                const uploadedImgWidth =
-                    isImage && result.width !== undefined
-                        ? Number(result.width)
-                        : null;
-                const uploadedImgHeight =
+
+                if (!result.url) {
+                    throw new Error(
+                        'Media upload failed: Missing URL from ImageKit response.',
+                    );
+                }
+
+                uploadedFileUrl = result.url;
+                uploadedFileType = file.type;
+                uploadedImgHeight =
                     isImage && result.height !== undefined
                         ? Number(result.height)
-                        : null;
+                        : undefined; // Change from null
+                uploadedImgWidth =
+                    isImage && result.width !== undefined
+                        ? Number(result.width)
+                        : undefined; // Change from null
+                uploadedTransformType = settings.type;
 
-                await addPostAction({
-                    desc,
-                    fileUrl: result.url,
-                    fileType: file.type,
-                    isSensitive: settings.sensitive,
-                    imgHeight: uploadedImgHeight,
-                    imgWidth: uploadedImgWidth,
-                    transformType: settings.type,
-                });
-
-                console.log('Uploaded URL:', result);
-                alert('Upload successful!'); // for testing
-
-                // Reset state
-                setDesc('');
-                resetMedia();
-                setSettings({
-                    type: 'origional',
-                    sensitive: false,
-                });
+                console.log('Media uploaded URL:', result.url);
             } catch (err) {
-                console.error('Upload failed:', err);
-                alert('Upload failed');
-            } finally {
-                setIsPosting(false);
+                console.error('Media upload failed:', err);
+                setClientError(
+                    `Media upload failed: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`,
+                );
+                return;
             }
-        } else {
-            await addPostAction({
-                desc,
-            });
-            alert('Post successful!');
-            // Reset state
-            setDesc('');
         }
+        addPostMutation.mutate({
+            desc,
+            fileUrl: uploadedFileUrl,
+            fileType: uploadedFileType,
+            isSensitive: settings.sensitive,
+            imgHeight: uploadedImgHeight,
+            imgWidth: uploadedImgWidth,
+            transformType: uploadedTransformType, // null if no media
+        });
     };
-
-    const { user } = useUser();
 
     return (
         <form className='p-4 flex gap-4' onSubmit={handleSubmit}>
@@ -168,7 +236,12 @@ const Share = () => {
                     value={desc}
                     placeholder='What is happening?!'
                     className='bg-transparent outline-none placeholder:text-textGray text-xl'
+                    disabled={addPostMutation.isPending} // disable while uploading
                 />
+                {/* Display client-side errors */}
+                {clientError && (
+                    <p className='text-red-500 text-sm mt-1'>{clientError}</p>
+                )}
                 {/* preview image */}
                 {previewUrl && (
                     <div className='mt-2'>
@@ -236,6 +309,7 @@ const Share = () => {
                             ref={inputRef}
                             id='file'
                             accept='image/*,video/*'
+                            disabled={addPostMutation.isPending}
                         />
                         <label htmlFor='file'>
                             <ImageIcon
@@ -277,10 +351,12 @@ const Share = () => {
                     </div>
                     <button
                         type='submit'
-                        disabled={isPosting || (!file && !desc.trim())} //<< maybe too much..
+                        disabled={
+                            addPostMutation.isPending || (!file && !desc.trim())
+                        } //<< maybe too much..
                         className='bg-white text-black rounded-full py-2 px-4'
                     >
-                        {isPosting ? 'Posting...' : 'Post'}
+                        {addPostMutation.isPending ? 'Posting...' : 'Post'}
                     </button>
                 </div>
             </div>

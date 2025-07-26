@@ -101,11 +101,14 @@ const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
     const initialHasMore = posts.length === POSTS_PER_PAGE;
 
     return (
-        <InfiniteFeed
-            userProfileId={userProfileId}
-            initialPosts={posts}
-            initialHasMore={initialHasMore}
-        />
+        <div className=''>
+            <InfiniteFeed
+                userProfileId={userProfileId}
+                initialPosts={posts}
+                initialHasMore={initialHasMore}
+                userId={userId}
+            />
+        </div>
     );
 };
 

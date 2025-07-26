@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../db/prisma';
 import { commentZodSchema, postZodSchema } from '../validators';
 import { revalidatePath } from 'next/cache';
+import { PostWithRelations } from '../../types';
 
 // action to like a post
 export const likePostAction = async (postId: string) => {
@@ -149,6 +150,19 @@ export const addCommentAction = async (
 };
 
 // add post action
+interface AddPostInput {
+    desc: string;
+    fileUrl?: string;
+    fileType?: string;
+    isSensitive?: boolean;
+    imgHeight?: number | null;
+    imgWidth?: number | null;
+    transformType?: 'origional' | 'wide' | 'square';
+}
+
+type AddPostResult =
+    | { success: true; post: PostWithRelations }
+    | { success: false; error: string };
 export const addPostAction = async ({
     desc,
     fileUrl,
@@ -157,49 +171,49 @@ export const addPostAction = async ({
     transformType,
     imgHeight,
     imgWidth,
-}: {
-    desc: string;
-    fileUrl?: string;
-    fileType?: string;
-    isSensitive?: boolean;
-    transformType?: 'origional' | 'wide' | 'square';
-    imgHeight?: number | null;
-    imgWidth?: number | null;
-}) => {
+}: AddPostInput): Promise<AddPostResult> => {
     const { userId } = await auth();
 
     if (!userId) throw new Error('User not authorized');
-
-    if (!fileUrl && !desc) throw new Error('Post must have content');
-
-    const validatedFields = postZodSchema.safeParse({
-        isSensitive,
-        desc,
-    });
-    if (!validatedFields.success) {
-        return { success: false, error: true };
-    }
-
     try {
-        await prisma.post.create({
+        const newPost = await prisma.post.create({
             data: {
                 userId,
                 desc,
                 ...(fileUrl && {
                     img: fileType?.startsWith('image/') ? fileUrl : null,
                     video: fileType?.startsWith('video/') ? fileUrl : null,
-                    imgWidth: imgWidth,
-                    imgHeight: imgHeight,
-                    transformType: transformType,
+                    imgWidth,
+                    imgHeight,
+                    transformType,
                 }),
                 isSensitive: isSensitive ?? false,
             },
+            include: {
+                user: true,
+                Like: true,
+                repost: true,
+                SavedPost: true,
+                _count: {
+                    select: {
+                        Like: true,
+                        comments: true,
+                        reposts: true,
+                    },
+                },
+            },
         });
 
-        revalidatePath(`/`);
+        return {
+            success: true as const,
+            post: newPost,
+        };
     } catch (error) {
         console.error('Failed to create post:', error);
-        throw new Error('Post creation failed');
+        return {
+            success: false as const,
+            error: 'Invalid post data',
+        };
     }
 };
 
@@ -231,7 +245,7 @@ export const followUserAction = async (targetUserId: string) => {
             });
         }
     } catch (error) {
-        console.log(`Error liking post`, error);
+        console.log(`Error following post: `, error);
         //return { success: false, message: 'Could not like post' };
     }
 };

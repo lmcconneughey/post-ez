@@ -1,12 +1,6 @@
-import type { Post, User } from '@prisma/client';
+import type { Post, User, Like, SavedPost } from '@prisma/client';
 
 export type MinimalUser = Pick<User, 'displayName' | 'userName' | 'img'>;
-
-export type InteractionSummary = {
-    Like: { id: string }[];
-    reposts: { id: string }[];
-    SavedPost: { id: string }[];
-};
 
 export type PostCountSummary = {
     _count: {
@@ -16,13 +10,30 @@ export type PostCountSummary = {
     };
 };
 
-export type RepostWithRelations = Post & {
-    user: MinimalUser;
-} & PostCountSummary &
-    InteractionSummary;
+export interface AddPostInput {
+    desc: string;
+    fileUrl?: string;
+    fileType?: string;
+    isSensitive: boolean;
+    imgHeight?: number;
+    imgWidth?: number;
+    transformType?: 'origional' | 'wide' | 'square'; // Changed from `Type | null`
+}
 
-export type PostWithRelations = Post & {
-    user: MinimalUser;
-    repost?: RepostWithRelations | null;
-} & PostCountSummary &
-    InteractionSummary;
+export interface PostWithRelations extends Post {
+    user: User;
+    Like: Like[];
+    repost: Post | null;
+    reposts: Post[];
+    SavedPost: SavedPost[];
+    _count: PostCountSummary['_count'];
+}
+
+export type AddPostResult =
+    | { success: true; post: PostWithRelations }
+    | { success: false; error: string };
+
+export interface PostsPage {
+    posts: PostWithRelations[];
+    hasMore: boolean;
+}

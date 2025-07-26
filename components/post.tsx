@@ -4,7 +4,7 @@ import PostInfo from './post-info';
 import PostInteractions from './post-interactions';
 import { Post as PrismaPost } from '@prisma/client';
 import { format } from 'timeago.js';
-//import Video from './video';
+import Video from './video';
 
 type PostDetails = PrismaPost & {
     user: {
@@ -95,7 +95,6 @@ const Post = ({
                         tr={true}
                     />
                 </div>
-
                 {/* content */}
                 <div className='flex-1 flex flex-col space-y-2'>
                     {/* top */}
@@ -156,6 +155,9 @@ const Post = ({
                             tr={true}
                             className='-z-10'
                         />
+                    )}
+                    {origionalPost.video && (
+                        <Video path={origionalPost.video} />
                     )}
                     {type === 'status' && (
                         <span className='text-textGray'>
