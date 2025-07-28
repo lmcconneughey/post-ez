@@ -50,10 +50,8 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                         'Post added successfully via PostContext for instant update.',
                     );
                 } else {
-                    // Fallback to query invalidation if context isn't available
-
                     console.warn(
-                        'PostContext not available or post data missing, falling back to query invalidation.',
+                        'PostContext not available (Share Component).',
                     );
                 }
                 queryClient.invalidateQueries({
