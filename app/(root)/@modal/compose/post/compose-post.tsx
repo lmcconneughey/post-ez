@@ -1,25 +1,31 @@
 'use client';
 
-import React, { useRef, useState, useContext } from 'react';
-import { PostContext } from './infiniteFeed';
-import ImageComponent from './image';
+import { useRouter } from 'next/navigation';
+import ImageComponent from '../../../../../components/image';
 import {
-    Image as ImageIcon,
     BarChart2,
-    Smile,
     CalendarClock,
+    ImageIcon,
     MapPin,
+    Smile,
 } from 'lucide-react';
-import Image from 'next/image';
 import { upload } from '@imagekit/next';
-import ImageEditor from './image-editor';
-import { useUser } from '@clerk/nextjs';
-import { addPostAction } from '../lib/actions/interactions-actions';
+import { PostContext } from '../../../../../components/infiniteFeed';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AddPostInput, AddPostResult } from '../types';
+import { AddPostInput, AddPostResult } from '../../../../../types';
+import { addPostAction } from '../../../../../lib/actions/interactions-actions';
+import { useUser } from '@clerk/nextjs';
+import Image from 'next/image';
+import ImageEditor from '../../../../../components/image-editor';
 
-const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
-    console.log('userprofileid: ', userProfileId);
+type UserImgType = {
+    img: string | null;
+    id: string;
+} | null;
+
+const ComposePost = ({ userData }: { userData: UserImgType }) => {
+    const router = useRouter();
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -38,6 +44,17 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
     const postContext = useContext(PostContext);
     const queryClient = useQueryClient();
 
+    // disable scroll when modal is open
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
+    const closeModel = () => {
+        router.back();
+    };
     const addPostMutation = useMutation<AddPostResult, Error, AddPostInput>({
         mutationFn: addPostAction,
         onSuccess: (data) => {
@@ -52,7 +69,7 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     queryClient.invalidateQueries({
                         queryKey: [
                             'posts',
-                            userProfileId ?? null,
+                            userData?.id ?? null,
                             user?.id ?? null,
                         ],
                     });
@@ -60,7 +77,6 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                         'PostContext not available or post data missing, falling back to query invalidation.',
                     );
                 }
-
                 // Clear the form after successful submission
                 setDesc('');
                 resetMedia();
@@ -68,7 +84,8 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     type: 'original',
                     sensitive: false,
                 });
-
+                // close model and show updated feed
+                closeModel();
                 console.log('Post added successfully! Feed will update.');
             } else {
                 console.error('Failed to add post (server-side):', data.error);
@@ -210,40 +227,48 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
     };
 
     return (
-        <form className='p-4 flex gap-4' onSubmit={handleSubmit}>
-            {/* avatar */}
-            <div className='relative w-10 h-10 rounded-full overflow-hidden'>
-                <ImageComponent
-                    path={
-                        user?.imageUrl ||
-                        'posts/blank-profile-picture-973460_640.png'
-                    }
-                    alt='user avatar'
-                    w={100}
-                    h={100}
-                    tr={true}
-                />
-            </div>
-            {/* others */}
-            <div className='flex-1 flex flex-col gap-4'>
-                <input
-                    onChange={(e) => setDesc(e.target.value)}
-                    type='text'
-                    name='desc'
-                    value={desc}
-                    placeholder='What is happening?!'
-                    className='bg-transparent outline-none placeholder:text-textGray text-xl'
-                    disabled={addPostMutation.isPending}
-                />
-                {/* Display client-side errors */}
-                {clientError && (
-                    <p className='text-red-500 text-sm mt-1'>{clientError}</p>
-                )}
-                {/* preview image */}
+        <div className='absolute w-screen h-screen top-0 left-0 z-20 bg-[#293139a6] flex justify-center'>
+            {/* top section */}
+            <div className='py-4 px-8 rounded-xl bg-black w-[600px] h-max mt-12'>
+                {/* top */}
+                <div className='flex items center justify-between'>
+                    <div onClick={closeModel} className='cursor-pointer'>
+                        x
+                    </div>
+                    <div className='text-iconBlue font-bold'>draft</div>
+                </div>
+                {/* container */}
+                <div className='py-8 flex gap-4'>
+                    <div className='relative w-10 h-10 rounded-full overflow-hidden'>
+                        <ImageComponent
+                            path='posts/profile.jpeg'
+                            alt='test profile image'
+                            w={100}
+                            h={100}
+                            tr={true}
+                        />
+                    </div>
+                    <input
+                        onChange={(e) => setDesc(e.target.value)}
+                        className='flex-1 bg-transparent outline-none text-lg'
+                        value={desc}
+                        name='desc'
+                        type='text'
+                        placeholder='What is happening'
+                        disabled={addPostMutation.isPending}
+                    />
+                    {/* Display client-side errors */}
+                    {clientError && (
+                        <p className='text-red-500 text-sm mt-1'>
+                            {clientError}
+                        </p>
+                    )}
+                </div>
+                {/* preview images */}
                 {previewUrl && (
-                    <div className='mt-2'>
+                    <div className='mt-2  '>
                         {file?.type.startsWith('image/') && previewUrl ? (
-                            <div className='relative rounded-xl overflow-hidden'>
+                            <div className='relative z-[999] rounded-xl overflow-hidden'>
                                 <Image
                                     src={previewUrl}
                                     alt='Preview'
@@ -288,16 +313,18 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     </div>
                 )}
                 {isEditorOpen && previewUrl && (
-                    <ImageEditor
-                        onClose={() => setIsEditorOpen(false)}
-                        previewUrl={previewUrl}
-                        settings={settings}
-                        setSettings={setSettings}
-                    />
+                    <div className='fixed inset-0 z-[9999]'>
+                        <ImageEditor
+                            onClose={() => setIsEditorOpen(false)}
+                            previewUrl={previewUrl}
+                            settings={settings}
+                            setSettings={setSettings}
+                        />
+                    </div>
                 )}
-                <div className='flex items-center justify-between gap-4 flex-wrap'>
-                    <div className='flex gap-4 flex-wrap'>
-                        {/* icons */}
+                {/* bottom */}
+                <div className='flex items-center justify-between gap-4 flex-wrap border-t border-borderGray pt-4'>
+                    <div className='flex flex-wrap gap-4'>
                         <input
                             type='file'
                             name='file'
@@ -347,18 +374,18 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                         />
                     </div>
                     <button
-                        type='submit'
                         disabled={
                             addPostMutation.isPending || (!file && !desc.trim())
                         }
-                        className='bg-white text-black rounded-full py-2 px-4'
+                        onClick={handleSubmit}
+                        className='rounded-full bg-white text-black py-2 px-4 font-bold'
                     >
                         {addPostMutation.isPending ? 'Posting...' : 'Post'}
                     </button>
                 </div>
             </div>
-        </form>
+        </div>
     );
 };
 
-export default Share;
+export default ComposePost;

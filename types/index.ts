@@ -17,7 +17,7 @@ export interface AddPostInput {
     isSensitive: boolean;
     imgHeight?: number;
     imgWidth?: number;
-    transformType?: 'origional' | 'wide' | 'square'; // Changed from `Type | null`
+    transformType?: 'original' | 'wide' | 'square'; // Changed from `Type | null`
 }
 
 export interface PostWithRelations extends Post {

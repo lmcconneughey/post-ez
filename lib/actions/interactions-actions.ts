@@ -78,15 +78,12 @@ export const savedPostAction = async (postId: string) => {
     if (!userId) throw new Error('User not authorised');
 
     try {
-        // check for existing Like
         const existingSavedPost = await prisma.savedPost.findFirst({
             where: {
                 userId,
                 postId,
             },
         });
-
-        // delete like or add like "toggle"
         if (existingSavedPost) {
             await prisma.savedPost.delete({
                 where: { id: existingSavedPost.id },
@@ -101,7 +98,6 @@ export const savedPostAction = async (postId: string) => {
         }
     } catch (error) {
         console.log(`Error rePosting`, error);
-        //return { success: false, message: 'Could not like post' };
     }
 };
 
@@ -157,7 +153,7 @@ interface AddPostInput {
     isSensitive?: boolean;
     imgHeight?: number | null;
     imgWidth?: number | null;
-    transformType?: 'origional' | 'wide' | 'square';
+    transformType?: 'original' | 'wide' | 'square';
 }
 
 type AddPostResult =
@@ -247,6 +243,5 @@ export const followUserAction = async (targetUserId: string) => {
         }
     } catch (error) {
         console.log(`Error following post: `, error);
-        //return { success: false, message: 'Could not like post' };
     }
 };
