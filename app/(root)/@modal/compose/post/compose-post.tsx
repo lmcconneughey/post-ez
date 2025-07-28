@@ -21,10 +21,13 @@ import ImageEditor from '../../../../../components/image-editor';
 
 type UserImgType = {
     img: string | null;
-    id: string;
 } | null;
+interface ComposePostProps {
+    userData: UserImgType;
+    userProfileId: string | undefined | null;
+}
 
-const ComposePost = ({ userData }: { userData: UserImgType }) => {
+const ComposePost = ({ userData, userProfileId }: ComposePostProps) => {
     console.log('ComposePost rendered');
     const router = useRouter();
     const [modalPreviewUrl, setModalPreviewUrl] = useState<string | null>(null);
@@ -66,18 +69,19 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                         'Post added successfully via PostContext for instant update.',
                     );
                 } else {
-                    // Fallback to query invalidation if context isn't available
-                    queryClient.invalidateQueries({
-                        queryKey: [
-                            'posts',
-                            userData?.id ?? null,
-                            user?.id ?? null,
-                        ],
-                    });
-                    console.warn(
-                        'PostContext not available or post data missing, falling back to query invalidation.',
-                    );
+                    console.warn('PostContext not available (composePost).');
                 }
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        'posts',
+                        userProfileId ?? null,
+                        user?.id ?? null,
+                    ],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ['posts'],
+                    exact: false,
+                });
                 // Clear the form after successful submission
                 setDesc('');
                 resetMedia();
@@ -87,6 +91,7 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                 });
                 // close model and show updated feed
                 closeModel();
+                router.refresh();
                 console.log('Post added successfully! Feed will update.');
             } else {
                 console.error('Failed to add post (server-side):', data.error);

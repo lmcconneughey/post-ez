@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { upload } from '@imagekit/next';
 import ImageEditor from './image-editor';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { addPostAction } from '../lib/actions/interactions-actions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AddPostInput, AddPostResult } from '../types';
@@ -37,6 +38,7 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const postContext = useContext(PostContext);
     const queryClient = useQueryClient();
+    const router = useRouter();
 
     const addPostMutation = useMutation<AddPostResult, Error, AddPostInput>({
         mutationFn: addPostAction,
@@ -49,17 +51,22 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     );
                 } else {
                     // Fallback to query invalidation if context isn't available
-                    queryClient.invalidateQueries({
-                        queryKey: [
-                            'posts',
-                            userProfileId ?? null,
-                            user?.id ?? null,
-                        ],
-                    });
+
                     console.warn(
                         'PostContext not available or post data missing, falling back to query invalidation.',
                     );
                 }
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        'posts',
+                        userProfileId ?? null,
+                        user?.id ?? null,
+                    ],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ['posts'],
+                    exact: false,
+                });
 
                 // Clear the form after successful submission
                 setDesc('');
@@ -68,7 +75,7 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     type: 'original',
                     sensitive: false,
                 });
-
+                router.refresh();
                 console.log('Post added successfully! Feed will update.');
             } else {
                 console.error('Failed to add post (server-side):', data.error);
