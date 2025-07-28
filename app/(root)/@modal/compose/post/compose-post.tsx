@@ -25,9 +25,10 @@ type UserImgType = {
 } | null;
 
 const ComposePost = ({ userData }: { userData: UserImgType }) => {
+    console.log('ComposePost rendered');
     const router = useRouter();
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [file, setFile] = useState<File | null>(null);
+    const [modalPreviewUrl, setModalPreviewUrl] = useState<string | null>(null);
+    const [modalFile, setModalFile] = useState<File | null>(null);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [desc, setDesc] = useState('');
     const [settings, setSettings] = useState<{
@@ -106,20 +107,20 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
         onSettled: () => {},
     });
 
-    const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleModalMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (
             (selectedFile && selectedFile.type.startsWith('image/')) ||
             (selectedFile && selectedFile.type.startsWith('video/'))
         ) {
-            setFile(selectedFile);
-            setPreviewUrl(URL.createObjectURL(selectedFile));
+            setModalFile(selectedFile);
+            setModalPreviewUrl(URL.createObjectURL(selectedFile));
             setClientError(null);
         }
     };
     const resetMedia = () => {
-        setFile(null);
-        setPreviewUrl(null);
+        setModalFile(null);
+        setModalPreviewUrl(null);
         setIsEditorOpen(false);
         if (inputRef.current) inputRef.current.value = '';
     };
@@ -138,7 +139,7 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!file && !desc.trim()) {
+        if (!modalFile && !desc.trim()) {
             alert('Please enter a description or select media to upload.');
             return;
         }
@@ -157,7 +158,7 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
         let uploadedTransformType: 'original' | 'wide' | 'square' | undefined =
             undefined;
 
-        if (file) {
+        if (modalFile) {
             try {
                 const authRes = await fetch('/api/upload-auth');
                 if (!authRes.ok) {
@@ -168,11 +169,11 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                 const { token, signature, expire, publicKey } =
                     await authRes.json();
 
-                const isImage = file.type.startsWith('image/');
+                const isImage = modalFile.type.startsWith('image/');
 
                 const result = await upload({
-                    file,
-                    fileName: file.name,
+                    file: modalFile,
+                    fileName: modalFile.name,
                     token,
                     signature,
                     expire,
@@ -195,7 +196,7 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                 }
 
                 uploadedFileUrl = result.url;
-                uploadedFileType = file.type;
+                uploadedFileType = modalFile.type;
                 uploadedImgHeight =
                     isImage && result.height !== undefined
                         ? Number(result.height)
@@ -227,7 +228,10 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
     };
 
     return (
-        <div className='absolute w-screen h-screen top-0 left-0 z-20 bg-[#293139a6] flex justify-center'>
+        <form
+            onSubmit={handleSubmit}
+            className='fixed w-screen h-screen top-0 left-0 z-[9999] bg-[#293139a6] flex justify-center'
+        >
             {/* top section */}
             <div className='py-4 px-8 rounded-xl bg-black w-[600px] h-max mt-12'>
                 {/* top */}
@@ -241,7 +245,10 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                 <div className='py-8 flex gap-4'>
                     <div className='relative w-10 h-10 rounded-full overflow-hidden'>
                         <ImageComponent
-                            path='posts/profile.jpeg'
+                            path={
+                                userData?.img ||
+                                'posts/blank-profile-picture-973460_640.png'
+                            }
                             alt='test profile image'
                             w={100}
                             h={100}
@@ -265,12 +272,13 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                     )}
                 </div>
                 {/* preview images */}
-                {previewUrl && (
-                    <div className='mt-2  '>
-                        {file?.type.startsWith('image/') && previewUrl ? (
-                            <div className='relative z-[999] rounded-xl overflow-hidden'>
+                {modalPreviewUrl && (
+                    <div className='mb-8'>
+                        {modalFile?.type.startsWith('image/') &&
+                        modalPreviewUrl ? (
+                            <div className='relative ml-10 rounded-xl overflow-hidden'>
                                 <Image
-                                    src={previewUrl}
+                                    src={modalPreviewUrl}
                                     alt='Preview'
                                     width={600}
                                     height={600}
@@ -295,10 +303,11 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                                     x
                                 </div>
                             </div>
-                        ) : file?.type.startsWith('video/') && previewUrl ? (
+                        ) : modalFile?.type.startsWith('video/') &&
+                          modalPreviewUrl ? (
                             <div className='relative'>
                                 <video
-                                    src={previewUrl}
+                                    src={modalPreviewUrl}
                                     controls
                                     className='rounded-lg max-h-64'
                                 />
@@ -312,15 +321,13 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                         ) : null}
                     </div>
                 )}
-                {isEditorOpen && previewUrl && (
-                    <div className='fixed inset-0 z-[9999]'>
-                        <ImageEditor
-                            onClose={() => setIsEditorOpen(false)}
-                            previewUrl={previewUrl}
-                            settings={settings}
-                            setSettings={setSettings}
-                        />
-                    </div>
+                {isEditorOpen && modalPreviewUrl && (
+                    <ImageEditor
+                        onClose={() => setIsEditorOpen(false)}
+                        previewUrl={modalPreviewUrl}
+                        settings={settings}
+                        setSettings={setSettings}
+                    />
                 )}
                 {/* bottom */}
                 <div className='flex items-center justify-between gap-4 flex-wrap border-t border-borderGray pt-4'>
@@ -328,14 +335,14 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                         <input
                             type='file'
                             name='file'
-                            onChange={handleMediaChange}
+                            onChange={handleModalMediaChange}
                             className='hidden'
                             ref={inputRef}
-                            id='file'
+                            id='modal-file'
                             accept='image/*,video/*'
                             disabled={addPostMutation.isPending}
                         />
-                        <label htmlFor='file'>
+                        <label htmlFor='modal-file'>
                             <ImageIcon
                                 width={20} // Directly set width to 20px
                                 height={20} // Directly set height to 20px
@@ -374,17 +381,18 @@ const ComposePost = ({ userData }: { userData: UserImgType }) => {
                         />
                     </div>
                     <button
+                        type='submit'
                         disabled={
-                            addPostMutation.isPending || (!file && !desc.trim())
+                            addPostMutation.isPending ||
+                            (!modalFile && !desc.trim())
                         }
-                        onClick={handleSubmit}
                         className='rounded-full bg-white text-black py-2 px-4 font-bold'
                     >
                         {addPostMutation.isPending ? 'Posting...' : 'Post'}
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
     );
 };
 
