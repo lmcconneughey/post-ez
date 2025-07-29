@@ -16,7 +16,7 @@ const VideoComponent = ({ path, classname }: VideoTypes) => {
             muted
             urlEndpoint={urlEndpoint}
             src={path} // The path to the video in your ImageKit account
-            classname={classname}
+            classname={`${classname}`}
             transformation={[{ height: 400, width: 600, quality: 90 }]}
             controls
         />

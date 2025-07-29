@@ -153,7 +153,7 @@ const Post = ({
                             w={600}
                             h={600}
                             tr={true}
-                            className='-z-10'
+                            className='-z-10 rounded-lg'
                         />
                     )}
                     {origionalPost.video && (
