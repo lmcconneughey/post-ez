@@ -6,14 +6,13 @@ import { auth } from '@clerk/nextjs/server';
 
 interface ModalProps {
     params: {
-        userProfileId?: string; // This name MUST match your folder name `[userProfileId]`
-        // Or if your profile page uses [userId], then it would be userId?: string;
+        userProfileId?: string;
     };
 }
 
 const Modal = async ({ params }: ModalProps) => {
-    const { userId: currentLoggedInUserId } = await auth(); // Get logged-in user ID from Clerk auth
-    if (!currentLoggedInUserId) return null; // Or handle unauthorized access
+    const { userId: currentLoggedInUserId } = await auth();
+    if (!currentLoggedInUserId) return null;
 
     const userData = await prisma.user.findFirst({
         where: { id: currentLoggedInUserId },
@@ -23,13 +22,12 @@ const Modal = async ({ params }: ModalProps) => {
         },
     });
 
-    // Extract userProfileId from params
     const userProfileIdFromRoute = params.userProfileId || null; // Ensure it's null if undefined
 
     return (
         <ComposePost
             userData={userData}
-            userProfileId={userProfileIdFromRoute} // Pass the ID from the route params
+            userProfileId={userProfileIdFromRoute}
         />
     );
 };
