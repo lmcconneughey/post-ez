@@ -23,7 +23,7 @@ type UserImgType = {
     img: string | null;
 } | null;
 interface ComposePostProps {
-    userData: UserImgType;
+    userData: UserImgType; //<< redundant??
     userProfileId: string | undefined | null;
 }
 

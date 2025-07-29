@@ -1,29 +1,22 @@
 'use server';
 
-import ComposePost from './compose-post';
+import ComposePostWrapper from '../compose-post-wrapper';
 import { prisma } from '../../../../../db/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-const Modal = async ({ params }: { params: { userProfileId?: string } }) => {
-    const { userId: currentLoggedInUserId } = await auth();
-    if (!currentLoggedInUserId) return null;
+const Modal = async () => {
+    const { userId } = await auth();
+    if (!userId) return null;
 
     const userData = await prisma.user.findFirst({
-        where: { id: currentLoggedInUserId },
+        where: { id: userId },
         select: {
             id: true,
             img: true,
         },
     });
-
-    const userProfileIdFromRoute = params.userProfileId ?? null;
-
-    return (
-        <ComposePost
-            userData={userData}
-            userProfileId={userProfileIdFromRoute}
-        />
-    );
+    if (!userData || !userData.img) return null;
+    return <ComposePostWrapper userData={userData} />;
 };
 
 export default Modal;
