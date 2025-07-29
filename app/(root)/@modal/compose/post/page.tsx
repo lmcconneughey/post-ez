@@ -4,13 +4,7 @@ import ComposePost from './compose-post';
 import { prisma } from '../../../../../db/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-interface ModalProps {
-    params: {
-        userProfileId?: string;
-    };
-}
-
-const Modal = async ({ params }: ModalProps) => {
+const Modal = async ({ params }: { params: { userProfileId?: string } }) => {
     const { userId: currentLoggedInUserId } = await auth();
     if (!currentLoggedInUserId) return null;
 
@@ -22,7 +16,7 @@ const Modal = async ({ params }: ModalProps) => {
         },
     });
 
-    const userProfileIdFromRoute = params.userProfileId || null; // Ensure it's null if undefined
+    const userProfileIdFromRoute = params.userProfileId ?? null;
 
     return (
         <ComposePost

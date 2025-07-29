@@ -77,7 +77,7 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                 console.log('Post added successfully! Feed will update.');
             } else {
                 console.error('Failed to add post (server-side):', data.error);
-                setClientError(data.error); // Display server-provided error
+                setClientError(data.error);
             }
         },
         onError: (error) => {
@@ -187,11 +187,11 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                 uploadedImgHeight =
                     isImage && result.height !== undefined
                         ? Number(result.height)
-                        : undefined; // Change from null
+                        : undefined;
                 uploadedImgWidth =
                     isImage && result.width !== undefined
                         ? Number(result.width)
-                        : undefined; // Change from null
+                        : undefined;
                 uploadedTransformType = settings.type;
 
                 console.log('Media uploaded URL:', result.url);
