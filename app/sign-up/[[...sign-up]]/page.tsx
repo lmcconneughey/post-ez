@@ -38,7 +38,7 @@ const SignUpPage = () => {
                             />
                             Sign up with Google
                         </Clerk.Connection>
-                        <Clerk.Connection
+                        {/* <Clerk.Connection
                             name='apple'
                             className='bg-white rounded-full text-black p-2 w-72 flex items-center justify-center gap-2 font-bold'
                         >
@@ -50,7 +50,7 @@ const SignUpPage = () => {
                                 priority
                             />
                             Sign up with Apple
-                        </Clerk.Connection>
+                        </Clerk.Connection> */}
                         <div className='flex flex-col gap-4'>
                             Sign up with credentials
                             <Clerk.Field

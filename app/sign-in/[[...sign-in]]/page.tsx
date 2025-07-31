@@ -37,7 +37,7 @@ const SignInPage = () => {
                         />
                         Sign in with Google
                     </Clerk.Connection>
-                    <Clerk.Connection
+                    {/* <Clerk.Connection
                         name='apple'
                         className='bg-white rounded-full text-black p-2 w-72 flex items-center justify-center gap-2 font-bold'
                     >
@@ -49,7 +49,7 @@ const SignInPage = () => {
                             priority
                         />
                         Sign in with Apple
-                    </Clerk.Connection>
+                    </Clerk.Connection> */}
                     {/* credentials login */}
                     <SignIn.Step name='start'>
                         <Clerk.Field
