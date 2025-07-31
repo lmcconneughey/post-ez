@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Postez
 
-## Getting Started
+A full-stack social media application for sharing posts and connecting with a community. This project was developed as a portfolio piece to demonstrate full-stack architecture, user authentication, real-time data handling, and media management.
 
-First, run the development server:
+## 🚧 Status Update
 
-```bash
+Please note that the application's domain, `movemakersny.com`, is currently undergoing DNS propagation. The DNS records have been correctly updated to point to the Vercel deployment, but it may take up to 48-72 hours for these changes to be reflected globally. During this time, you may be redirected to a temporary placeholder page.
+
+- **Live Site**: [https://movemakersny.com](https://www.google.com/search?q=https://movemakersny.com)
+
+- **Expected Behavior**: The live application will be available at the domain above once DNS propagation is complete.
+
+- **Immediate Access**: For a consistent experience, you can view the live site via a direct Vercel URL. This URL is provided in the project's settings, but for security, it is not shared publicly. Please use the main domain as the primary point of access.
+
+Thank you for your patience and understanding!
+
+## ✨ Features
+
+- **User Authentication**: Secure user registration, sign-in, and sign-out powered by Clerk.
+
+- **Social Posting**: Users can create, view, and interact with posts.
+
+- **Image Uploads**: Image uploads and management using ImageKit.io.
+
+- **Real-time Updates**: Post updates and other events are handled in real time with WebSockets deployed via separate Node back-end.
+
+- **Responsive UI**: Adaptive user interface built with Next.js and Tailwind CSS.
+
+- **Database**: Data management using Prisma with a PostgreSQL database.
+
+## 🚀 Technologies Used
+
+- **Frontend**: [Next.js], [React], [Tailwind CSS]
+
+- **Backend**: [Next.js API Routes], [node]
+
+- **Database**: [PostgreSQL]managed by [Prisma]
+
+- **Authentication**: [Clerk]
+
+- **Media Management**: [ImageKit.io]
+
+- **Real-time Communication**: [WebSockets]
+
+- **Deployment**: [Vercel]
+
+## ⚙️ Project Setup
+
+To run this project locally, follow these steps:
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/download/) (v18 or higher)
+
+- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
+
+- A PostgreSQL database instance
+
+### 1. Clone the repository
+
+```
+git clone
+cd postez
+
+```
+
+### 2. Install dependencies
+
+```
+npm install
+# or
+yarn install
+
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the root of the project and add your configurations. This project uses the following services:
+
+```
+# Database
+DATABASE_URL="postgresql://user:password@host:port/database?schema=public"
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# ImageKit
+NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=[https://ik.imagekit.io/](https://ik.imagekit.io/)...
+IMAGEKIT_PRIVATE_KEY=private_...
+
+# WebSockets
+# Add your WebSocket connection URL here
+WEBSOCKET_URL=ws://localhost:3001
+
+```
+
+### 4. Run database migrations
+
+Use Prisma to push your database schema and seed data.
+
+```
+npx prisma migrate dev --name init
+
+```
+
+### 5. Run the development server
+
+```
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be running at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🤝 Contact
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **\[Lawrence McConneughey\]**
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **\[(https://www.linkedin.com/in/lawrence-mcconneughey/)\]**
