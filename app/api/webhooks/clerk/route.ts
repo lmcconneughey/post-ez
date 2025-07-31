@@ -14,9 +14,23 @@ export async function POST(req: NextRequest) {
         console.log('Webhook payload:', evt.data);
         if (eventType === 'user.created') {
             const { id, username, email_addresses } = evt.data;
-            const email = email_addresses[0]?.email_address;
-            await prisma.user.create({
-                data: {
+            const email = email_addresses[0]?.email_address ?? null;
+            if (!email || !username) {
+                console.log(
+                    `Missing email or username for Clerk user ID: ${id}`,
+                );
+                return new Response('Missing necessary user data', {
+                    status: 400,
+                });
+            }
+            await prisma.user.upsert({
+                // no dup user errors
+                where: { id },
+                update: {
+                    userName: username as string,
+                    email,
+                },
+                create: {
                     id,
                     userName: username as string,
                     email,
