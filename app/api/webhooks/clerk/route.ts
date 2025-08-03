@@ -24,15 +24,14 @@ export async function POST(req: NextRequest) {
                 });
             }
             await prisma.user.upsert({
-                // no dup user errors
-                where: { id },
+                where: { id: id },
                 update: {
-                    userName: username as string,
+                    userName: username,
                     email,
                 },
                 create: {
-                    id,
-                    userName: username as string,
+                    id: id,
+                    userName: username,
                     email,
                 },
             });
