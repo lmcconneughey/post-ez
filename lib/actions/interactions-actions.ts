@@ -220,6 +220,17 @@ export const followUserAction = async (targetUserId: string) => {
     if (!userId) throw new Error('User not authorised');
 
     try {
+        const targetUser = await prisma.user.findUnique({
+            where: { id: targetUserId },
+            select: { userName: true },
+        });
+
+        if (!targetUser) {
+            // Handle the case where the user doesn't exist
+            throw new Error('Target user not found');
+        }
+
+        const username = targetUser.userName;
         // check if we are following target user
         const existingFollow = await prisma.follow.findFirst({
             where: {
@@ -241,6 +252,8 @@ export const followUserAction = async (targetUserId: string) => {
                 },
             });
         }
+        revalidatePath(`/${username}`);
+        revalidatePath(`/`);
     } catch (error) {
         console.log(`Error following post: `, error);
     }
