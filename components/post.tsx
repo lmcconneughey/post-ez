@@ -149,7 +149,7 @@ const Post = ({
                     {origionalPost.img && (
                         <ImageComponent
                             path={origionalPost.img}
-                            alt='post image'
+                            alt={`${origionalPost.user.displayName}'s profile picture`}
                             w={600}
                             h={600}
                             tr={true}
@@ -161,7 +161,7 @@ const Post = ({
                     )}
                     {type === 'status' && (
                         <span className='text-textGray'>
-                            2:34 PM Jul 2, 2025
+                            {format(origionalPost.createdAt)}
                         </span>
                     )}
                     <PostInteractions
