@@ -10,7 +10,16 @@ export default clerkMiddleware(
             return;
         }
 
-        await auth();
+        const session = await auth();
+
+        // In dev
+        if (!session?.userId && process.env.NODE_ENV === 'development') {
+            console.warn('No user session in dev at:', url);
+        }
+
+        if (!session?.userId && process.env.NODE_ENV === 'production') {
+            return Response.redirect(new URL('/sign-in', req.url));
+        }
     },
     {
         signInUrl: '/sign-in',
