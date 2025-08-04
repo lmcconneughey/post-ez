@@ -67,7 +67,7 @@ export const SignOutButton = ({ userData }: { userData: UserData }) => {
                     className='absolute bottom-24 left-5 p-4 rounded-lg bg-black text-white flex items-center justify-center gap-4 w-max outline-1 outline-borderGray cursor-pointer'
                 >
                     <button
-                        onClick={() => signOut({ redirectUrl: '/' })}
+                        onClick={() => signOut()}
                         className='cursor-pointer'
                     >
                         Log Out @{user?.username}
