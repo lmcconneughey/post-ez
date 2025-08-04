@@ -4,7 +4,7 @@ A full-stack social media application for sharing posts and connecting with a co
 
 ## 🚧 Status Update
 
-Please note that the application's domain, `movemakersny.com`, is currently undergoing DNS propagation. The DNS records have been correctly updated to point to the Vercel deployment, but it may take up to 48-72 hours for these changes to be reflected globally. During this time, you may be redirected to a temporary placeholder page.
+Now implementing the 'For You' Feed. Users will soon view a feed with posts/activities from current users.
 
 - **Live Site**: [https://movemakersny.com](https://www.google.com/search?q=https://movemakersny.com)
 
