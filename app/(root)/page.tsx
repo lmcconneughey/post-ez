@@ -8,9 +8,11 @@ const Homepage = async ({
 }: {
     searchParams: { feedType?: string };
 }) => {
-    const params = await searchParams;
+    // Explicitly await the searchParams object
+    const resolvedSearchParams = await searchParams;
     const feedType =
-        (params.feedType as 'for-you' | 'following') || 'following';
+        (resolvedSearchParams.feedType as 'for-you' | 'following') ||
+        'following';
 
     return (
         <div className=''>
