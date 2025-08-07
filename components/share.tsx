@@ -53,18 +53,8 @@ const Share = ({ userProfileId }: { userProfileId?: string | null }) => {
                     console.warn(
                         'PostContext not available (Share Component).',
                     );
+                    queryClient.invalidateQueries({ queryKey: ['posts'] });
                 }
-                queryClient.invalidateQueries({
-                    queryKey: [
-                        'posts',
-                        userProfileId ?? null,
-                        user?.id ?? null,
-                    ],
-                });
-                queryClient.invalidateQueries({
-                    queryKey: ['posts'],
-                    exact: false,
-                });
 
                 // Clear the form after successful submission
                 setDesc('');

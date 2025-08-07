@@ -258,3 +258,93 @@ export const followUserAction = async (targetUserId: string) => {
         console.log(`Error following post: `, error);
     }
 };
+
+// fetch posts for following feed
+const postInclude = {
+    user: true,
+    Like: true,
+    repost: {
+        include: {
+            user: true,
+            _count: {
+                select: {
+                    Like: true,
+                    reposts: true,
+                    comments: true,
+                },
+            },
+            Like: true,
+            reposts: true,
+            SavedPost: true,
+        },
+    },
+    _count: {
+        select: {
+            Like: true,
+            reposts: true,
+            comments: true,
+        },
+    },
+    reposts: true,
+    SavedPost: true,
+};
+
+export const getFollowingFeedPostsAction = async (
+    userId: string,
+    take: number,
+    skip: number,
+) => {
+    const followingIds = await prisma.follow.findMany({
+        where: {
+            followerId: userId,
+        },
+        select: {
+            followingId: true,
+        },
+    });
+
+    const ids = followingIds.map((f) => f.followingId);
+
+    const userIds = [userId, ...ids];
+
+    return prisma.post.findMany({
+        where: {
+            userId: {
+                in: userIds,
+            },
+            parentPostId: null, // fetch top level
+        },
+        take: take,
+        skip: skip,
+        orderBy: { createdAt: 'desc' },
+        include: postInclude,
+    });
+};
+
+export const getUserProfilePostsAction = async (
+    userProfileId: string,
+    take: number,
+    skip: number,
+) => {
+    return prisma.post.findMany({
+        where: {
+            userId: userProfileId,
+            parentPostId: null,
+        },
+        take: take,
+        skip: skip,
+        orderBy: { createdAt: 'desc' },
+        include: postInclude,
+    });
+};
+export const getForYouPostsAction = async (take: number, skip: number) => {
+    return prisma.post.findMany({
+        where: {
+            parentPostId: null,
+        },
+        take: take,
+        skip: skip,
+        orderBy: { createdAt: 'desc' },
+        include: postInclude,
+    });
+};

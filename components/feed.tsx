@@ -1,84 +1,55 @@
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../db/prisma';
-import InfiniteFeed from './infiniteFeed';
+import { redirect } from 'next/navigation';
 import { POSTS_PER_PAGE } from '../lib/constants';
+import {
+    getFollowingFeedPostsAction,
+    getUserProfilePostsAction,
+    getForYouPostsAction,
+} from '../lib/actions/interactions-actions';
+import InfiniteFeed from './infiniteFeed';
 
-const Feed = async ({ userProfileId }: { userProfileId?: string }) => {
+const Feed = async ({
+    userProfileId,
+    feedType,
+}: {
+    userProfileId?: string;
+    feedType: 'for-you' | 'following';
+}) => {
     const { userId } = await auth();
 
+    // Check for mandatory authentication
     if (!userId) {
-        console.log('Feed: No userId found (user not authenticated).');
-        return null;
+        console.log('Feed: No userId found. Redirecting to sign-in.');
+        redirect('/sign-in');
     }
 
-    const whereCondition = userProfileId
-        ? { parentPostId: null, userId: userProfileId }
-        : {
-              parentPostId: null,
-              userId: {
-                  in: [
-                      userId,
-                      ...(
-                          await prisma.follow.findMany({
-                              where: {
-                                  followerId: userId,
-                              },
-                              select: {
-                                  followingId: true,
-                              },
-                          })
-                      ).map(
-                          (follow: { followingId: string }) =>
-                              follow.followingId,
-                      ),
-                  ],
-              },
-          };
+    let posts;
+    const skip = 0;
 
-    const posts = await prisma.post.findMany({
-        where: whereCondition,
-        include: {
-            user: true,
-            repost: {
-                include: {
-                    user: true,
-                    _count: {
-                        select: {
-                            Like: true,
-                            reposts: true,
-                            comments: true,
-                        },
-                    },
-                    Like: true,
-                    reposts: true,
-                    SavedPost: true,
-                },
-            },
-            _count: {
-                select: {
-                    Like: true,
-                    reposts: true,
-                    comments: true,
-                },
-            },
-            Like: true,
-            reposts: true,
-            SavedPost: true,
-        },
-        take: POSTS_PER_PAGE,
-        orderBy: { createdAt: 'desc' },
-    });
+    if (userProfileId) {
+        posts = await getUserProfilePostsAction(
+            userProfileId,
+            POSTS_PER_PAGE,
+            skip,
+        );
+    } else if (feedType === 'for-you') {
+        posts = await getForYouPostsAction(POSTS_PER_PAGE, skip);
+    } else {
+        // feedType === 'following'
+
+        posts = await getFollowingFeedPostsAction(userId, POSTS_PER_PAGE, skip);
+    }
+
     const initialHasMore = posts.length === POSTS_PER_PAGE;
 
     return (
-        <div className=''>
-            <InfiniteFeed
-                userProfileId={userProfileId}
-                initialPosts={posts}
-                initialHasMore={initialHasMore}
-                userId={userId}
-            />
-        </div>
+        <InfiniteFeed
+            userProfileId={userProfileId}
+            initialPosts={posts}
+            initialHasMore={initialHasMore}
+            userId={userId}
+            feedType={feedType}
+        />
     );
 };
 

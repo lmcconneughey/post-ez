@@ -1,32 +1,24 @@
 import Feed from '../../components/feed';
+import FeedSelector from '../../components/feed-selector';
 import Share from '../../components/share';
-import Link from 'next/link';
+import { Suspense } from 'react';
 
-const Homepage = () => {
+const Homepage = async ({
+    searchParams,
+}: {
+    searchParams: { feedType?: string };
+}) => {
+    const params = await searchParams;
+    const feedType =
+        (params.feedType as 'for-you' | 'following') || 'following';
+
     return (
         <div className=''>
-            <div className='px-4 pt-4 flex justify-between text-textGray font-bold border-b-[1px] border-borderGray'>
-                <Link className='pb-3 flex items-center' href='/'>
-                    For you
-                </Link>
-                <Link
-                    className='pb-3 flex items-center border-b-4 border-iconBlue'
-                    href='/'
-                >
-                    Following
-                </Link>
-                <Link className='hidden pb-3 md:flex items-center' href='/'>
-                    Victor Wooten
-                </Link>
-                <Link className='hidden pb-3 md:flex items-center' href='/'>
-                    Mohini Dey
-                </Link>
-                <Link className='hidden pb-3 md:flex items-center' href='/'>
-                    Esperanza Spalding
-                </Link>
-            </div>
+            <FeedSelector />
             <Share />
-            <Feed />
+            <Suspense fallback={<div>Loading feed...</div>}>
+                <Feed feedType={feedType} />
+            </Suspense>
         </div>
     );
 };
