@@ -4,7 +4,7 @@ A full-stack social media application for sharing posts and connecting with a co
 
 ## 🚧 Status Update
 
-Now implementing the 'For You' Feed. Users will soon view a feed with posts/activities from current users.
+'For You' Feed is now live. I will be implementing edit profile functionality soon while pushing minor improvements as they are made.
 
 - **Live Site**: [https://movemakersny.com](https://www.google.com/search?q=https://movemakersny.com)
 
