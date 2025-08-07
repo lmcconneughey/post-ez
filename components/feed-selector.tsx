@@ -24,11 +24,13 @@ const FeedSelector = () => {
     };
 
     return (
-        <div className='px-4 pt-4 flex flex-wrap text-textGray font-bold border-b-[1px] border-borderGray'>
-            <div className='basis-1/2 flex justify-center'>
+        <div className='flex text-textGray font-bold border-b-[1px] border-borderGray'>
+            <div
+                onClick={() => handleFeedChange('for-you')}
+                className=' cursor-pointer basis-1/2 flex justify-center pt-4 hover:bg-gray-100/10 transition-colors'
+            >
                 <button
-                    onClick={() => handleFeedChange('for-you')}
-                    className={`pb-3 cursor-pointer   ${
+                    className={`pb-3   ${
                         currentFeedType === 'for-you'
                             ? 'border-b-4 border-iconBlue'
                             : ''
@@ -37,10 +39,12 @@ const FeedSelector = () => {
                     For You
                 </button>
             </div>
-            <div className='basis-1/2 flex justify-center'>
+            <div
+                onClick={() => handleFeedChange('following')}
+                className=' cursor-pointer basis-1/2 flex justify-center pt-4 hover:bg-gray-100/10 transition-colors'
+            >
                 <button
-                    onClick={() => handleFeedChange('following')}
-                    className={`pb-3 cursor-pointer ${
+                    className={`pb-3 ${
                         currentFeedType === 'following'
                             ? 'border-b-4 border-iconBlue'
                             : ''
