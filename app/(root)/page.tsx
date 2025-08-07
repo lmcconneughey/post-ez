@@ -6,20 +6,21 @@ import { Suspense } from 'react';
 const Homepage = async ({
     searchParams,
 }: {
-    searchParams: { feedType?: string };
+    searchParams: Promise<{ feedType?: string }>;
 }) => {
-    // Explicitly await the searchParams object
-    const resolvedSearchParams = await searchParams;
-    const feedType =
-        (resolvedSearchParams.feedType as 'for-you' | 'following') ||
-        'following';
+    const { feedType } = await searchParams;
+
+    const resolvedFeedType =
+        feedType === 'for-you' || feedType === 'following'
+            ? feedType
+            : 'following';
 
     return (
-        <div className=''>
+        <div>
             <FeedSelector />
             <Share />
             <Suspense fallback={<div>Loading feed...</div>}>
-                <Feed feedType={feedType} />
+                <Feed feedType={resolvedFeedType} />
             </Suspense>
         </div>
     );
