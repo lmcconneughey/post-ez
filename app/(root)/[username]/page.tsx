@@ -147,7 +147,7 @@ const UserPage = async ({
             </div>
             {userId === user.id && <Share userProfileId={user.id} />}
             {/* feed */}
-            <Feed userProfileId={user.id} />
+            <Feed feedType='following' userProfileId={user.id} />
         </div>
     );
 };
