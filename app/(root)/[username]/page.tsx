@@ -45,6 +45,8 @@ const UserPage = async ({
     });
     if (!user) return notFound();
 
+    const isCurrentUser = userId === user.id;
+
     return (
         <div className=''>
             {/* profile title */}
@@ -94,7 +96,17 @@ const UserPage = async ({
                     <div className='w-9 h-9 flex items-center justify-center rounded-full border-[1px] border-gray-500 cursor-pointer '>
                         <MailIcon size={20} />
                     </div>
-                    {userId && (
+                    {isCurrentUser ? (
+                        <Link
+                            href={{
+                                pathname: '/user5',
+                                query: { modal: 'edit' },
+                            }}
+                            className='bg-black text-white font-semibold text-sm px-4 py-2 rounded-full border-[1px] border-gray-500'
+                        >
+                            Edit Profile
+                        </Link>
+                    ) : (
                         <FollowButton
                             userId={user.id}
                             isFollowed={!!user.following.length}

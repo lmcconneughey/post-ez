@@ -98,7 +98,14 @@ const LeftBar = async () => {
             displayName: true,
         },
     });
-    if (!user) throw new Error('No user found');
+    if (!user) {
+        console.log('LEFT BAR: no user Found');
+        return (
+            <div className='sticky top-0 h-screen flex flex-col justify-between pt-2 pb-8'>
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
     return (
         <div className='sticky top-0 h-screen flex flex-col justify-between pt-2 pb-8'>
