@@ -4,11 +4,11 @@ import RightBar from '../../components/right-bar';
 export default function RootLayout({
     children,
     modal,
-    'edit-modal': editModal,
+    editModal,
 }: Readonly<{
     children: React.ReactNode;
     modal: React.ReactNode;
-    'edit-modal': React.ReactNode;
+    editModal: React.ReactNode;
 }>) {
     return (
         <div className='max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-screen-2xl mx-auto flex justify-between'>
