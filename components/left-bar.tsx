@@ -123,24 +123,31 @@ const LeftBar = async () => {
                 </Link>
                 {/* menu list*/}
                 <div className='flex flex-col gap-2'>
-                    {menuList.map((item, index) => (
-                        <div key={item.id || index}>
-                            {index === 2 && (
-                                <div>
-                                    <Notification />
-                                </div>
-                            )}
-                            <Link
-                                href={item.link}
-                                className='p-2 rounded-full hover:bg-[#181818] flex items-center gap-4'
-                            >
-                                <item.icon />
-                                <span className='hidden 2xl:inline'>
-                                    {item.name}
-                                </span>
-                            </Link>
-                        </div>
-                    ))}
+                    {menuList.map((item) => {
+                        const linkHref =
+                            item.name === 'Profile'
+                                ? `/${user.userName}`
+                                : item.link;
+
+                        return (
+                            <div key={item.id}>
+                                {item.id === 3 && (
+                                    <div>
+                                        <Notification />
+                                    </div>
+                                )}
+                                <Link
+                                    href={linkHref}
+                                    className='p-2 rounded-full hover:bg-[#181818] flex items-center gap-4'
+                                >
+                                    <item.icon />
+                                    <span className='hidden 2xl:inline'>
+                                        {item.name}
+                                    </span>
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
                 {/* button */}
                 <Link

@@ -73,15 +73,15 @@ const UserPage = async ({
                     </div>
 
                     {/* avatar */}
-                    <div className='w-1/6 aspect-square rounded-full overflow-hidden border-4 border-black bg-gray-300 absolute left-4 -translate-y-1/2'>
+                    <div className='w-1/5 aspect-square rounded-full overflow-hidden border-4 border-black bg-gray-300 absolute left-4 -translate-y-1/2'>
                         <ImageComponent
                             path={
                                 user.img ||
                                 'posts/blank-profile-picture-973460_640.png'
                             }
                             alt='avatar test iamge'
-                            w={100}
-                            h={100}
+                            w={150}
+                            h={150}
                             tr={true}
                         />
                     </div>
@@ -98,10 +98,7 @@ const UserPage = async ({
                     </div>
                     {isCurrentUser ? (
                         <Link
-                            href={{
-                                pathname: '/user5',
-                                query: { modal: 'edit' },
-                            }}
+                            href={`/editProfile`}
                             className='bg-black text-white font-semibold text-sm px-4 py-2 rounded-full border-[1px] border-gray-500'
                         >
                             Edit Profile

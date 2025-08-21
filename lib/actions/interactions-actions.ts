@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../db/prisma';
 import { commentZodSchema } from '../validators';
 import { revalidatePath } from 'next/cache';
-import { PostWithRelations } from '../../types';
+import { EditProfileFormState, PostWithRelations } from '../../types';
 
 // action to like a post
 export const likePostAction = async (postId: string) => {
@@ -347,4 +347,49 @@ export const getForYouPostsAction = async (take: number, skip: number) => {
         orderBy: { createdAt: 'desc' },
         include: postInclude,
     });
+};
+
+export const editProfileAction = async (
+    _prevState: EditProfileFormState | undefined,
+    data: {
+        name: string;
+        bio: string;
+        location: string;
+        website: string;
+        cover?: string;
+        img?: string;
+    },
+): Promise<EditProfileFormState> => {
+    const { userId } = await auth();
+    if (!userId) {
+        return { errors: { _form: 'You must be logged in' } };
+    }
+    const user = await prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            userName: true,
+        },
+    });
+
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                displayName: data.name,
+                bio: data.bio,
+                location: data.location,
+                website: data.website,
+                cover: data.cover ?? null,
+                img: data.img ?? null,
+            },
+        });
+    } catch (err) {
+        console.error('DB update failed:', err);
+        return { errors: { _form: 'Failed to update profile' } };
+    }
+
+    revalidatePath(`/${user?.userName}`);
+    return { success: true, message: 'Profile updated successfully!' };
 };

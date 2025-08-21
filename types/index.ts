@@ -37,3 +37,27 @@ export interface PostsPage {
     posts: PostWithRelations[];
     hasMore: boolean;
 }
+
+export type EditProfileFormState =
+    | {
+          errors: {
+              name?: string[];
+              bio?: string[];
+              location?: string[];
+              website?: string[];
+              cover?: string[];
+              img?: string[];
+          };
+          success?: undefined;
+          message?: undefined;
+      }
+    | {
+          errors: { _form: string };
+          success?: undefined;
+          message?: undefined;
+      }
+    | {
+          success: true;
+          message: string;
+          errors?: undefined;
+      };
