@@ -4,7 +4,7 @@ A full-stack social media application for sharing posts and connecting with a co
 
 ## 🚧 Status Update
 
-'For You' Feed is now live. I will be implementing edit profile functionality soon while pushing minor improvements as they are made.
+Edit profile is up! The Edit Profile feature is up! Users can upload an avatar and cover image with crop and zoom. I'll be making improvements to this new feature.
 
 - **Live Site**: [https://movemakersny.com](https://www.google.com/search?q=https://movemakersny.com)
 
