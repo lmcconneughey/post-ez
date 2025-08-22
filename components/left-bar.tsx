@@ -131,7 +131,7 @@ const LeftBar = async () => {
 
                         return (
                             <div key={item.id}>
-                                {item.id === 3 && (
+                                {item.id === 2 && (
                                     <div>
                                         <Notification />
                                     </div>
