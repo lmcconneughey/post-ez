@@ -9,17 +9,20 @@ import { notFound } from 'next/navigation';
 const StatusPage = async ({
     params,
 }: {
-    params: Promise<{ username: string; postId: string }>;
+    params: { username: string; postId: string };
 }) => {
     const { userId } = await auth();
-
     if (!userId) return;
 
-    const postId = (await params).postId;
+    const { username, postId } = params;
+    console.log('Status: ', username, ' ', postId);
 
     const post = await prisma.post.findFirst({
         where: {
             id: postId,
+            user: {
+                userName: username,
+            },
         },
         include: {
             user: {

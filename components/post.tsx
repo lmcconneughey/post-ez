@@ -140,22 +140,22 @@ const Post = ({
                     </div>
                     {/* text and media */}
                     <Link
-                        href={`/${origionalPost.user.userName}/status/${origionalPost.id}`}
+                        href={`/${origionalPost.user.userName}/status/${origionalPost.id}`} // <-- not directing to user post
                     >
                         <p className={`${type == 'status' && 'text-lg'}`}>
                             {origionalPost.desc}
                         </p>
+                        {origionalPost.img && (
+                            <ImageComponent
+                                path={origionalPost.img}
+                                alt={`${origionalPost.user.displayName}'s profile picture`}
+                                w={600}
+                                h={600}
+                                tr={true}
+                                className='-z-10 rounded-lg'
+                            />
+                        )}
                     </Link>
-                    {origionalPost.img && (
-                        <ImageComponent
-                            path={origionalPost.img}
-                            alt={`${origionalPost.user.displayName}'s profile picture`}
-                            w={600}
-                            h={600}
-                            tr={true}
-                            className='-z-10 rounded-lg'
-                        />
-                    )}
                     {origionalPost.video && (
                         <Video path={origionalPost.video} />
                     )}
