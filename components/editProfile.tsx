@@ -44,6 +44,13 @@ const EditProfile = ({ user }: Props) => {
     const [croppedAvatarPreview, setCroppedAvatarPreview] = useState<
         string | null
     >(null);
+    // disable scroll when modal is open
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
 
     const closeModal = () => router.back();
 
@@ -103,6 +110,7 @@ const EditProfile = ({ user }: Props) => {
             if (croppedAvatarPreview) URL.revokeObjectURL(croppedAvatarPreview);
         };
     }, [croppedCoverPreview, croppedAvatarPreview]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSaving(true);
@@ -143,6 +151,8 @@ const EditProfile = ({ user }: Props) => {
 
             console.log('Profile update result:', result);
             setFormState(result);
+
+            form.reset();
         } catch (error) {
             console.error('Submission failed:', error);
             setFormState({
@@ -217,7 +227,7 @@ const EditProfile = ({ user }: Props) => {
                                     setCoverFile(e.target.files[0]);
                             }}
                         />
-                        <label htmlFor='cover-file'>
+                        <label htmlFor='cover-file' className='cursor-pointer'>
                             <ImagePlus />
                         </label>
                     </div>
@@ -256,7 +266,10 @@ const EditProfile = ({ user }: Props) => {
                                         setAvatarFile(e.target.files[0]);
                                 }}
                             />
-                            <label htmlFor='avatar-file'>
+                            <label
+                                htmlFor='avatar-file'
+                                className='cursor-pointer'
+                            >
                                 <ImagePlus />
                             </label>
                         </div>
