@@ -13,11 +13,12 @@ interface StatusPageProps {
     };
 }
 
-const StatusPage = async ({ params }: StatusPageProps) => {
+export default async function StatusPage({
+    params: { username, postid },
+}: StatusPageProps) {
     const { userId } = await auth();
     if (!userId) return null;
 
-    const { username, postid } = params;
     console.log('Status:', username, postid);
 
     const post = await prisma.post.findFirst({
@@ -129,6 +130,4 @@ const StatusPage = async ({ params }: StatusPageProps) => {
             />
         </div>
     );
-};
-
-export default StatusPage;
+}
