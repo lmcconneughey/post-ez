@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 interface StatusPageProps {
     params: {
         username: string;
-        postId: string;
+        postid: string; // match folder name
     };
 }
 
@@ -17,12 +17,12 @@ const StatusPage = async ({ params }: StatusPageProps) => {
     const { userId } = await auth();
     if (!userId) return null;
 
-    const { username, postId } = params;
-    console.log('Status:', username, postId);
+    const { username, postid } = params;
+    console.log('Status:', username, postid);
 
     const post = await prisma.post.findFirst({
         where: {
-            id: postId,
+            id: postid,
             user: { userName: username },
         },
         include: {

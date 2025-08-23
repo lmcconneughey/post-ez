@@ -8,6 +8,7 @@ type Props = {
     aspect: number;
     cropShape?: 'rect' | 'round';
     onCancel: () => void;
+    // eslint-disable-next-line no-unused-vars
     onCropComplete: (croppedBlob: Blob) => void;
 };
 
