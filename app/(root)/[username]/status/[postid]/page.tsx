@@ -15,7 +15,7 @@ interface StatusPageProps {
 
 const StatusPage = async ({ params }: StatusPageProps) => {
     const { userId } = await auth();
-    if (!userId) return;
+    if (!userId) return null;
 
     const { username, postId } = params;
     console.log('Status:', username, postId);
@@ -23,9 +23,7 @@ const StatusPage = async ({ params }: StatusPageProps) => {
     const post = await prisma.post.findFirst({
         where: {
             id: postId,
-            user: {
-                userName: username,
-            },
+            user: { userName: username },
         },
         include: {
             user: {
