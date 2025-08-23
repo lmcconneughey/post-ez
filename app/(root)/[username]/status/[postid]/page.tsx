@@ -6,16 +6,13 @@ import { prisma } from '../../../../../db/prisma';
 import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
 
-interface StatusPageProps {
-    params: {
-        username: string;
-        postid: string; // match folder name
-    };
-}
-
 export default async function StatusPage({
-    params: { username, postid },
-}: StatusPageProps) {
+    params,
+}: {
+    params: { username: string; postid: string };
+}) {
+    const { username, postid } = params;
+
     const { userId } = await auth();
     if (!userId) return null;
 
