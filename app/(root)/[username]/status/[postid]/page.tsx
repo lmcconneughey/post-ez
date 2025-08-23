@@ -16,8 +16,6 @@ export default async function StatusPage({
     const { userId } = await auth();
     if (!userId) return null;
 
-    console.log('Status:', username, postid);
-
     const post = await prisma.post.findFirst({
         where: {
             id: postid,
