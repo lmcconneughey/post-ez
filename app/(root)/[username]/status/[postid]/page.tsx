@@ -6,16 +6,19 @@ import { prisma } from '../../../../../db/prisma';
 import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
 
-const StatusPage = async ({
-    params,
-}: {
-    params: { username: string; postId: string };
-}) => {
+interface StatusPageProps {
+    params: {
+        username: string;
+        postId: string;
+    };
+}
+
+const StatusPage = async ({ params }: StatusPageProps) => {
     const { userId } = await auth();
     if (!userId) return;
 
     const { username, postId } = params;
-    console.log('Status: ', username, ' ', postId);
+    console.log('Status:', username, postId);
 
     const post = await prisma.post.findFirst({
         where: {
