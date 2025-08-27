@@ -1,0 +1,40 @@
+'use client';
+
+import { MessageSquare, MoreHorizontal } from 'lucide-react';
+
+const Messages = () => {
+    return (
+        <div className='flex'>
+            <div className='flex flex-col gap-4 min-w-[400px] border-r h-screen border-borderGray'>
+                <div className='flex gap-4 m-4 justify-between flex-wrap'>
+                    <div className=''>
+                        <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
+                            Messages
+                        </h1>
+                    </div>
+                    <div className='flex gap-4 items-center'>
+                        <MoreHorizontal width={20} height={20} />
+                        <MessageSquare width={20} height={20} />
+                    </div>
+                </div>
+                <div className='flex flex-col gap-4 items-center'>
+                    <div className='w-[300px]'>
+                        <h1 className='text-4xl mt-8 font-bold'>
+                            Welcome to your inbox!
+                        </h1>
+                        <p className='text-sm mt-2 text-textGray'>
+                            Drop a line, share posts and more with private
+                            conversations between you and others on EZ.{' '}
+                        </p>
+                        <button className='py-3.5 px-10 mt-8 mr-auto bg-iconBlue text-white font-bold rounded-full items-start'>
+                            write a message
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div className=' ml-4 md:ml-8 '>RIGHT COL</div>
+        </div>
+    );
+};
+
+export default Messages;

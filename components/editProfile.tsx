@@ -146,13 +146,13 @@ const EditProfile = ({ user }: Props) => {
                 img: img,
             };
 
-            // Call the mock function instead of the server action
             const result = await editProfileAction(undefined, data);
 
             console.log('Profile update result:', result);
             setFormState(result);
 
             form.reset();
+            closeModal();
         } catch (error) {
             console.error('Submission failed:', error);
             setFormState({
