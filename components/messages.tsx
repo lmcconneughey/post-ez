@@ -32,7 +32,20 @@ const Messages = () => {
                     </div>
                 </div>
             </div>
-            <div className=' ml-4 md:ml-8 '>RIGHT COL</div>
+            <div className='flex m-auto gap-4  items-center'>
+                <div className='w-[400px]'>
+                    <h1 className='text-4xl mt-8 font-bold'>
+                        Select a message
+                    </h1>
+                    <p className='text-sm mt-2 text-textGray'>
+                        Choose from your existing conversations, start a new
+                        one, or just keep swimming.{' '}
+                    </p>
+                    <button className='py-3.5 px-10 mt-8 mr-auto bg-iconBlue text-white font-bold rounded-full items-start'>
+                        write a message
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
