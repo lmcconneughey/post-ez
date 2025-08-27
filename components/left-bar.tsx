@@ -127,7 +127,9 @@ const LeftBar = async () => {
                         const linkHref =
                             item.name === 'Profile'
                                 ? `/${user.userName}`
-                                : item.link;
+                                : item.name === 'Messages'
+                                  ? `/messages`
+                                  : item.link;
 
                         return (
                             <div key={item.id}>
