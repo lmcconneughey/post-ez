@@ -393,3 +393,5 @@ export const editProfileAction = async (
     revalidatePath(`/${user?.userName}`);
     return { success: true, message: 'Profile updated successfully!' };
 };
+
+export const searchPeopleAction = async () => {};
