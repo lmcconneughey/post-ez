@@ -4,7 +4,12 @@ export default clerkMiddleware(
     async (auth, req) => {
         const url = req.nextUrl.pathname;
 
-        const publicRoutes = ['/sign-in', '/sign-up', '/robots.txt'];
+        const publicRoutes = [
+            '/sign-in',
+            '/sign-up',
+            '/robots.txt',
+            '/messages/compose',
+        ];
 
         if (publicRoutes.some((route) => url.startsWith(route))) {
             return;

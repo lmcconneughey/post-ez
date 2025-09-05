@@ -1,11 +1,12 @@
 'use client';
 
 import { MessageSquare, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 
 const Messages = () => {
     return (
         <div className='flex'>
-            <div className='flex flex-col gap-4 min-w-[400px] border-r h-screen border-borderGray'>
+            <div className='sm:min-w-[600px]  flex flex-col gap-4 lg:min-w-[400px] border-r h-screen border-borderGray'>
                 <div className='flex gap-4 m-4 justify-between flex-wrap'>
                     <div className=''>
                         <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
@@ -17,7 +18,7 @@ const Messages = () => {
                         <MessageSquare width={20} height={20} />
                     </div>
                 </div>
-                <div className='flex flex-col gap-4 items-center'>
+                <div className=' flex flex-col gap-4 items-center'>
                     <div className='w-[300px]'>
                         <h1 className='text-4xl mt-8 font-bold'>
                             Welcome to your inbox!
@@ -32,7 +33,7 @@ const Messages = () => {
                     </div>
                 </div>
             </div>
-            <div className='flex m-auto gap-4  items-center'>
+            <div className='hidden lg:flex m-auto gap-4 items-center'>
                 <div className='w-[400px]'>
                     <h1 className='text-4xl mt-8 font-bold'>
                         Select a message
@@ -41,9 +42,12 @@ const Messages = () => {
                         Choose from your existing conversations, start a new
                         one, or just keep swimming.{' '}
                     </p>
-                    <button className='py-3.5 px-10 mt-8 mr-auto bg-iconBlue text-white font-bold rounded-full items-start'>
-                        write a message
-                    </button>
+                    <Link
+                        href='/messages/compose'
+                        className='inline-block py-3.5 px-10 mt-8 mr-auto bg-iconBlue text-white font-bold rounded-full'
+                    >
+                        Write a Message
+                    </Link>
                 </div>
             </div>
         </div>
