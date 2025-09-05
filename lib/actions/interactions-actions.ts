@@ -394,4 +394,37 @@ export const editProfileAction = async (
     return { success: true, message: 'Profile updated successfully!' };
 };
 
-export const searchPeopleAction = async () => {};
+export const searchPeopleAction = async (query: string) => {
+    const { userId } = await auth();
+
+    if (!userId) {
+        throw new Error('Unauthorized');
+    }
+
+    if (!query || query.trim() === '') {
+        return [];
+    }
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                id: { not: userId },
+                OR: [
+                    { userName: { contains: query, mode: 'insensitive' } },
+                    { displayName: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                userName: true,
+                displayName: true,
+                img: true,
+            },
+            take: 10,
+        });
+
+        return users;
+    } catch (error) {
+        console.error('Error searching people:', error);
+        throw new Error('Could not search people');
+    }
+};
