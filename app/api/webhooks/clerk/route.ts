@@ -34,16 +34,16 @@ export async function POST(req: NextRequest) {
             });
             console.log(`User created: ${username} (${id})`);
         }
-        if (eventType === 'user.deleted') {
-            const { id } = evt.data;
+        // if (eventType === 'user.deleted') {
+        //     const { id } = evt.data;
 
-            await prisma.user.delete({
-                where: {
-                    id,
-                },
-            });
-            console.log(`User deleted: (${id})`);
-        }
+        //     await prisma.user.delete({
+        //         where: {
+        //             id,
+        //         },
+        //     });
+        //     console.log(`User deleted: (${id})`);
+        // }
 
         return new Response('Webhook received', { status: 200 });
     } catch (err) {
