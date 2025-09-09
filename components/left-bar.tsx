@@ -83,6 +83,7 @@ const menuList = [
 
 const LeftBar = async () => {
     const { userId } = await auth();
+    console.log('Clerk userId from auth():', userId);
 
     if (!userId) {
         console.log('Feed: No userId found (user not authenticated).');

@@ -4,6 +4,7 @@ import { X, Search } from 'lucide-react';
 import { searchPeopleAction } from '../lib/actions/interactions-actions';
 import { useState } from 'react';
 import SearchResult from './search-result';
+import ImageComponent from './image';
 
 type searchType = {
     id: string;
@@ -15,6 +16,7 @@ type searchType = {
 const ComposeMessage = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<searchType[]>([]);
+    const [recipient, setRecipient] = useState<searchType[]>([]);
 
     const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value);
@@ -25,6 +27,13 @@ const ComposeMessage = () => {
             setResults([]);
         }
     };
+    const handleRecipient = (user: searchType) => {
+        setRecipient(
+            (prev) =>
+                prev.some((u) => u.id === user.id) ? prev : [...prev, user], // avoid dups
+        );
+    };
+    console.log('from Child: ', recipient);
 
     return (
         <form className='fixed w-screen h-screen top-0 left-0 z-50 bg-[#293139a6] flex justify-center'>
@@ -58,8 +67,38 @@ const ComposeMessage = () => {
                         className='bg-transparent outline-none text-xl text-white'
                     />
                 </div>
+                <div className='flex items-center gap-2'>
+                    {recipient &&
+                        recipient.map((u) => (
+                            <div
+                                className='flex items-center rounded-full gap-2 py-1 px-2 border-[1px] border-borderGray'
+                                key={u.id}
+                            >
+                                <ImageComponent
+                                    path={
+                                        u.img ||
+                                        'posts/blank-profile-picture-973460_640.png'
+                                    }
+                                    alt='avatar'
+                                    w={20}
+                                    h={20}
+                                    tr={true}
+                                    className='rounded-full'
+                                />
+                                <p className='font-bold'>
+                                    {u.displayName ?? u.userName}
+                                </p>
+                                <div className=''>
+                                    <X className='text-iconBlue' size={20} />
+                                </div>
+                            </div>
+                        ))}
+                </div>
                 <div className='mt-2 border-t border-textGray'>
-                    <SearchResult results={results} />
+                    <SearchResult
+                        results={results}
+                        onSelectUser={handleRecipient}
+                    />
                 </div>
             </div>
         </form>

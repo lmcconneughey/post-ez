@@ -7,9 +7,11 @@ type SearchType = {
 
 type SearchResultProps = {
     results: SearchType[];
+    // eslint-disable-next-line no-unused-vars
+    onSelectUser: (user: SearchType) => void;
 };
 
-const SearchResult = ({ results }: SearchResultProps) => {
+const SearchResult = ({ results, onSelectUser }: SearchResultProps) => {
     return (
         <div className='text-white'>
             {results.length === 0 ? (
@@ -17,6 +19,7 @@ const SearchResult = ({ results }: SearchResultProps) => {
             ) : (
                 results.map((user) => (
                     <div
+                        onClick={() => onSelectUser(user)}
                         key={user.id}
                         className='px-4 py-2 hover:bg-gray-800 cursor-pointer'
                     >

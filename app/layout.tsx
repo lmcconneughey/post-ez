@@ -14,12 +14,12 @@ export default function AppLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <ClerkProvider>
-            <QueryProvider>
-                <html lang='en'>
-                    <body>{children}</body>
-                </html>
-            </QueryProvider>
-        </ClerkProvider>
+        <html lang='en'>
+            <body>
+                <ClerkProvider>
+                    <QueryProvider>{children}</QueryProvider>
+                </ClerkProvider>
+            </body>
+        </html>
     );
 }
