@@ -33,7 +33,10 @@ const ComposeMessage = () => {
                 prev.some((u) => u.id === user.id) ? prev : [...prev, user], // avoid dups
         );
     };
-    console.log('from Child: ', recipient);
+    const handleDelete = (userId: string) => {
+        setRecipient((prev) => prev.filter((r) => r.id !== userId));
+    };
+    // console.log('');
 
     return (
         <form className='fixed w-screen h-screen top-0 left-0 z-50 bg-[#293139a6] flex justify-center'>
@@ -88,7 +91,10 @@ const ComposeMessage = () => {
                                 <p className='font-bold'>
                                     {u.displayName ?? u.userName}
                                 </p>
-                                <div className=''>
+                                <div
+                                    className=''
+                                    onClick={() => handleDelete(u.id)}
+                                >
                                     <X className='text-iconBlue' size={20} />
                                 </div>
                             </div>
