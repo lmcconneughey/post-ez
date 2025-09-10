@@ -5,6 +5,7 @@ import { searchPeopleAction } from '../lib/actions/interactions-actions';
 import { useState } from 'react';
 import SearchResult from './search-result';
 import ImageComponent from './image';
+import { useRouter } from 'next/navigation';
 
 type searchType = {
     id: string;
@@ -17,6 +18,12 @@ const ComposeMessage = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<searchType[]>([]);
     const [recipient, setRecipient] = useState<searchType[]>([]);
+
+    const router = useRouter();
+
+    const handleClose = () => {
+        router.back(); // or router.push('/messages');
+    };
 
     const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value);
@@ -43,7 +50,10 @@ const ComposeMessage = () => {
             <div className='py-4 rounded-xl bg-black w-[600px] h-max mt-64'>
                 <div className='flex items-center justify-between flex-wrap gap-4 w-full'>
                     <div className='flex gap-4 px-4 items-center flex-wrap'>
-                        <div className='cursor-pointer text-white'>
+                        <div
+                            className='cursor-pointer text-white'
+                            onClick={handleClose}
+                        >
                             <X />
                         </div>
                         <h2 className='text-lg font-bold text-white'>
