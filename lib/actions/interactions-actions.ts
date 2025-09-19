@@ -428,3 +428,95 @@ export const searchPeopleAction = async (query: string) => {
         throw new Error('Could not search people');
     }
 };
+
+export const createConversationAction = async (participantIds: string[]) => {
+    try {
+        if (!participantIds || participantIds.length === 0) {
+            throw new Error(
+                'A conversation must have at least one participant.',
+            );
+        }
+
+        const sortedParticipantIds = [...participantIds].sort();
+
+        const existingConversation = await prisma.conversation.findFirst({
+            where: {
+                participants: {
+                    every: {
+                        userId: { in: sortedParticipantIds },
+                    },
+                    some: {
+                        userId: { in: sortedParticipantIds },
+                    },
+                },
+            },
+            include: {
+                participants: true,
+                messages: true,
+            },
+        });
+
+        if (existingConversation) {
+            return existingConversation;
+        }
+
+        const newConversation = await prisma.conversation.create({
+            data: {
+                participants: {
+                    create: sortedParticipantIds.map((id) => ({ userId: id })),
+                },
+            },
+            include: {
+                participants: true,
+            },
+        });
+
+        return newConversation;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            // sheesh
+            console.error('An error occurred:', error.message);
+        } else {
+            console.error('An unknown error occurred:', error);
+        }
+    }
+};
+
+export const fetchConversationAction = async (conversationId: string) => {
+    try {
+        if (!conversationId) {
+            return;
+        }
+        const conversation = await prisma.conversation.findUnique({
+            where: {
+                id: conversationId,
+            },
+            include: {
+                messages: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+
+                    take: 20,
+                },
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                userName: true,
+                                displayName: true,
+                                img: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return conversation;
+    } catch (error) {
+        console.error('Error fetching conversation:', error);
+
+        return null;
+    }
+};

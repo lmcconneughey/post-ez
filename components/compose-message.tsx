@@ -6,6 +6,7 @@ import { useState } from 'react';
 import SearchResult from './search-result';
 import ImageComponent from './image';
 import { useRouter } from 'next/navigation';
+import { createConversationAction } from '../lib/actions/interactions-actions';
 
 type searchType = {
     id: string;
@@ -18,6 +19,9 @@ const ComposeMessage = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<searchType[]>([]);
     const [recipient, setRecipient] = useState<searchType[]>([]);
+    const [selectedParticipantIds, setSelectedParticipantIds] = useState<
+        string[]
+    >([]);
 
     const router = useRouter();
 
@@ -43,7 +47,23 @@ const ComposeMessage = () => {
     const handleDelete = (userId: string) => {
         setRecipient((prev) => prev.filter((r) => r.id !== userId));
     };
-    // console.log('');
+
+    const handleCreateConversation = async () => {
+        try {
+            const newParticipantIds = recipient.map((r) => r.id);
+
+            const conversation =
+                await createConversationAction(newParticipantIds);
+
+            setSelectedParticipantIds(newParticipantIds);
+
+            if (conversation) {
+                router.push(`/messages/${conversation.id}`);
+            }
+        } catch (error) {
+            console.error('Failed to create conversation:', error);
+        }
+    };
 
     return (
         <form className='fixed w-screen h-screen top-0 left-0 z-50 bg-[#293139a6] flex justify-center'>
@@ -61,12 +81,21 @@ const ComposeMessage = () => {
                         </h2>
                     </div>
                     <div className='flex gap-4 px-4 items-center flex-wrap'>
-                        <button
-                            type='submit'
-                            className='rounded-full bg-white text-black py-2 px-4 font-bold flex '
-                        >
-                            Next
-                        </button>
+                        {recipient.length > 0 ? (
+                            <button
+                                onClick={handleCreateConversation}
+                                className='rounded-full bg-white text-black py-1.5 px-4 font-bold flex '
+                            >
+                                Next
+                            </button>
+                        ) : (
+                            <button
+                                className='rounded-full bg-textGray text-black py-1.5 px-4 font-bold flex '
+                                disabled
+                            >
+                                Next
+                            </button>
+                        )}
                     </div>
                 </div>
                 {/* text fields */}
