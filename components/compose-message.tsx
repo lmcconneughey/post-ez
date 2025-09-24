@@ -15,18 +15,18 @@ type searchType = {
     img?: string | null;
 };
 
-const ComposeMessage = () => {
+const ComposeMessage = ({ onClose }: { onClose: () => void }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<searchType[]>([]);
     const [recipient, setRecipient] = useState<searchType[]>([]);
-    const [selectedParticipantIds, setSelectedParticipantIds] = useState<
-        string[]
-    >([]);
+    // const [selectedParticipantIds, setSelectedParticipantIds] = useState<
+    //     string[]
+    // >([]);
 
     const router = useRouter();
 
     const handleClose = () => {
-        router.back(); // or router.push('/messages');
+        return onClose();
     };
 
     const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,14 +48,16 @@ const ComposeMessage = () => {
         setRecipient((prev) => prev.filter((r) => r.id !== userId));
     };
 
-    const handleCreateConversation = async () => {
+    const handleCreateConversation = async (e: React.MouseEvent) => {
+        e.preventDefault();
         try {
             const newParticipantIds = recipient.map((r) => r.id);
 
             const conversation =
                 await createConversationAction(newParticipantIds);
 
-            setSelectedParticipantIds(newParticipantIds);
+            //setSelectedParticipantIds(newParticipantIds);
+            console.log('From Compose: ', conversation);
 
             if (conversation) {
                 router.push(`/messages/${conversation.id}`);

@@ -7,13 +7,16 @@ import { notFound } from 'next/navigation';
 import { fetchConversationAction } from '../../../lib/actions/interactions-actions';
 import SearchBar from '../../../components/search-bar';
 import MessageList from '../../../components/message-list';
+import MessageThread from '../../../components/message-thread';
 
 interface Props {
-    params: { conversationId: string };
+    params: Promise<{ conversationId: string }>;
 }
 
 const ConversationPage = async ({ params }: Props) => {
-    const { conversationId } = params;
+    console.log(params);
+
+    const { conversationId } = await params;
     if (!conversationId) {
         notFound();
     }
@@ -21,8 +24,8 @@ const ConversationPage = async ({ params }: Props) => {
     if (!userId) return;
 
     const conversation = await fetchConversationAction(conversationId);
-    console.log('TestCreated Convo: ', conversation);
-    //if (!conversation) return;
+    //console.log('TestCreated Convo: ', conversation);
+    if (!conversation) return;
 
     const currentUserData = await prisma.user.findFirst({
         where: {
@@ -60,7 +63,7 @@ const ConversationPage = async ({ params }: Props) => {
                     currentUserConversations={conversation}
                 />
             </div>
-            <div className='gap-4 w-full'>
+            <div className='gap-4 w-full relative h-screen'>
                 <div className='flex gap-4 m-4 justify-between flex-wrap'>
                     <div className=''>
                         <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
@@ -98,6 +101,9 @@ const ConversationPage = async ({ params }: Props) => {
                     <p className='text-textGray'>
                         joind {format(currentUserData?.createdAt || '')}
                     </p>
+                </div>
+                <div className='bottom-0 p-2 fixed  border-t-borderGray border-t-2'>
+                    <MessageThread conversation={conversation} />
                 </div>
             </div>
         </div>
