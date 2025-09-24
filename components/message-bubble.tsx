@@ -1,21 +1,25 @@
-type Message = {
-    id: string;
-    body: string | null;
-};
+import React from 'react';
+import { format } from 'timeago.js';
 
 interface MessageBubbleProps {
-    message: Message;
+    message: string | null;
     isOwn: boolean;
+    createdAt: Date;
 }
 
-const MessageBubble = ({ message, isOwn }: MessageBubbleProps) => {
+const MessageBubble = ({ message, isOwn, createdAt }: MessageBubbleProps) => {
     return (
-        <div
-            className={`px-4 py-2 rounded-lg max-w-xs ${
-                isOwn ? 'bg-iconBlue text-white' : 'bg-gray-700 text-white'
-            }`}
-        >
-            {message.body}
+        <div className='flex flex-col'>
+            <div
+                className={`px-4 py-2 m-2 rounded-lg max-w-xs ${
+                    isOwn ? 'bg-iconBlue text-white' : 'bg-gray-700 text-white'
+                }`}
+            >
+                {message}
+            </div>
+            <p className='text-textGray text-xs'>
+                {format(createdAt)} {isOwn && 'from you'}
+            </p>
         </div>
     );
 };

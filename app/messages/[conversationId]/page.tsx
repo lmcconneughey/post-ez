@@ -14,8 +14,6 @@ interface Props {
 }
 
 const ConversationPage = async ({ params }: Props) => {
-    console.log(params);
-
     const { conversationId } = await params;
     if (!conversationId) {
         notFound();
@@ -102,7 +100,7 @@ const ConversationPage = async ({ params }: Props) => {
                         joind {format(currentUserData?.createdAt || '')}
                     </p>
                 </div>
-                <div className='bottom-0 p-2 fixed  border-t-borderGray border-t-2'>
+                <div className='bottom-0 p-2 fixed border-t-borderGray border-t-2'>
                     <MessageThread conversation={conversation} />
                 </div>
             </div>

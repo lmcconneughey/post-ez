@@ -525,31 +525,33 @@ export const sendMessageAction = async (
     conversationId: string,
     body: string,
 ) => {
-    const { userId } = await auth();
-    if (!userId) return;
+    try {
+        const { userId } = await auth();
+        if (!userId) return;
 
-    // make sure the conversation exists
-    const conversation = await prisma.conversation.findUnique({
-        where: { id: conversationId },
-    });
-    if (!conversation) {
-        throw new Error('Conversation not found');
+        const conversation = await prisma.conversation.findUnique({
+            where: { id: conversationId },
+        });
+        if (!conversation) {
+            throw new Error('Conversation not found');
+        }
+
+        const newMessage = await prisma.message.create({
+            data: {
+                conversationId,
+                senderId: userId,
+                body,
+            },
+            select: {
+                id: true,
+                body: true,
+                createdAt: true,
+                senderId: true,
+            },
+        });
+        revalidatePath('/messages/[conversationId]');
+        return newMessage;
+    } catch (error) {
+        console.error('Failed to send message:', error);
     }
-
-    // create and return the new message
-    const newMessage = await prisma.message.create({
-        data: {
-            conversationId,
-            senderId: userId,
-            body,
-        },
-        select: {
-            id: true,
-            body: true,
-            createdAt: true,
-            senderId: true,
-        },
-    });
-
-    return newMessage;
 };
