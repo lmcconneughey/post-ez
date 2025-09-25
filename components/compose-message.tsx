@@ -7,6 +7,7 @@ import SearchResult from './search-result';
 import ImageComponent from './image';
 import { useRouter } from 'next/navigation';
 import { createConversationAction } from '../lib/actions/interactions-actions';
+import { useUser } from '@clerk/nextjs';
 
 type searchType = {
     id: string;
@@ -19,6 +20,7 @@ const ComposeMessage = ({ onClose }: { onClose: () => void }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<searchType[]>([]);
     const [recipient, setRecipient] = useState<searchType[]>([]);
+    const { user } = useUser();
     // const [selectedParticipantIds, setSelectedParticipantIds] = useState<
     //     string[]
     // >([]);
@@ -51,12 +53,16 @@ const ComposeMessage = ({ onClose }: { onClose: () => void }) => {
     const handleCreateConversation = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            const newParticipantIds = recipient.map((r) => r.id);
+            if (!user?.id) {
+                console.error('Current user ID not available.');
+                return;
+            }
+
+            const newParticipantIds = [...recipient.map((r) => r.id), user.id];
 
             const conversation =
                 await createConversationAction(newParticipantIds);
 
-            //setSelectedParticipantIds(newParticipantIds);
             console.log('From Compose: ', conversation);
 
             if (conversation) {
