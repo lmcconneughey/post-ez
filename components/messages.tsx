@@ -7,6 +7,7 @@ import ComposeMessage from './compose-message';
 import ImageComponent from './image';
 import { format } from 'timeago.js';
 import Link from 'next/link';
+
 type MessagesListProps = {
     conversations: {
         id: string;
@@ -21,9 +22,10 @@ type MessagesListProps = {
             };
         }[];
     }[];
+    currentUserId: string;
 };
 
-const Messages = ({ conversations }: MessagesListProps) => {
+const Messages = ({ conversations, currentUserId }: MessagesListProps) => {
     const [modal, setModal] = useState(false);
 
     const handleModalOpen = () => {
@@ -47,48 +49,52 @@ const Messages = ({ conversations }: MessagesListProps) => {
                         <MessageSquare width={20} height={20} />
                     </div>
                 </div>
-                {conversations ? (
+                {conversations.length > 0 ? (
                     <div className='flex flex-col w-full'>
-                        {conversations.map((c) => (
-                            <Link
-                                href={`/messages/${c.id}`}
-                                key={c.id}
-                                className='flex gap-4 items-center bg-borderGray border-r-2 border-iconBlue '
-                            >
-                                <div className='gap-4 mt-2 ml-2 mb-2'>
-                                    <ImageComponent
-                                        path={
-                                            c.participants[0]?.user?.img ||
-                                            'posts/blank-profile-picture-973460_640.png'
-                                        }
-                                        alt='avatar image'
-                                        w={50}
-                                        h={50}
-                                        className='rounded-full'
-                                    />
-                                </div>
-                                <div className='flex-col'>
-                                    <div className='flex gap-2'>
-                                        <p className='font-bold '>
-                                            {c.participants[0]?.user
-                                                .displayName ??
-                                                c.participants[0]?.user
-                                                    .userName}
-                                        </p>
+                        {conversations.map((c) => {
+                            const otherUser = c.participants.find(
+                                (p) => p.user.id !== currentUserId,
+                            );
+
+                            return (
+                                <Link
+                                    href={`/messages/${c.id}`}
+                                    key={c.id}
+                                    className='flex gap-4 mt-0.5 items-center  bg-borderGray border-r-2 border-iconBlue'
+                                >
+                                    <div className='gap-4 mt-2 ml-2 mb-2'>
+                                        <ImageComponent
+                                            path={
+                                                otherUser?.user.img ||
+                                                'posts/blank-profile-picture-973460_640.png'
+                                            }
+                                            alt='avatar image'
+                                            w={50}
+                                            h={50}
+                                            className='rounded-full'
+                                        />
+                                    </div>
+                                    <div className='flex-col'>
+                                        <div className='flex gap-2'>
+                                            <p className='font-bold'>
+                                                {otherUser?.user.displayName ??
+                                                    otherUser?.user.userName}
+                                            </p>
+                                            <p className='text-sm text-textGray'>
+                                                @{otherUser?.user.userName}
+                                            </p>
+                                            <p className='text-sm text-textGray'>
+                                                {format(c.createdAt)}
+                                            </p>
+                                        </div>
                                         <p className='text-sm text-textGray'>
-                                            @{c.participants[0]?.user?.userName}
-                                        </p>
-                                        <p className='text-sm text-textGray'>
-                                            {format(c.createdAt)}
+                                            {c.messages[0]?.body ??
+                                                'No messages yet'}
                                         </p>
                                     </div>
-                                    <p className='text-sm text-textGray'>
-                                        {c.messages[0]?.body ??
-                                            'No messages yet'}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
+                                </Link>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className=' flex flex-col gap-4 items-center'>

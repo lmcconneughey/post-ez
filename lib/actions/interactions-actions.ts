@@ -431,33 +431,38 @@ export const searchPeopleAction = async (query: string) => {
 
 export const createConversationAction = async (participantIds: string[]) => {
     try {
-        if (!participantIds || participantIds.length === 0) {
+        if (!participantIds || participantIds.length < 2) {
             throw new Error(
-                'A conversation must have at least one participant.',
+                'A conversation must have at least two participants.',
             );
         }
 
         const sortedParticipantIds = [...participantIds].sort();
 
-        const existingConversation = await prisma.conversation.findFirst({
+        const conversationExists = await prisma.conversation.findFirst({
             where: {
-                participants: {
-                    every: {
-                        userId: { in: sortedParticipantIds },
+                AND: [
+                    {
+                        participants: {
+                            every: {
+                                userId: { in: sortedParticipantIds },
+                            },
+                        },
                     },
-                    some: {
-                        userId: { in: sortedParticipantIds },
+
+                    {
+                        participants: {
+                            every: {
+                                userId: { in: sortedParticipantIds },
+                            },
+                        },
                     },
-                },
-            },
-            include: {
-                participants: true,
-                messages: true,
+                ],
             },
         });
 
-        if (existingConversation) {
-            return existingConversation;
+        if (conversationExists) {
+            return conversationExists;
         }
 
         const newConversation = await prisma.conversation.create({
@@ -472,13 +477,9 @@ export const createConversationAction = async (participantIds: string[]) => {
         });
 
         return newConversation;
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            // sheesh
-            console.error('An error occurred:', error.message);
-        } else {
-            console.error('An unknown error occurred:', error);
-        }
+    } catch (error) {
+        console.error('Conversation Error:', error);
+        return null;
     }
 };
 
@@ -558,7 +559,7 @@ export const sendMessageAction = async (
 
 export const fetchConversationsAction = async (userId: string) => {
     try {
-        return await prisma.conversation.findMany({
+        const results = await prisma.conversation.findMany({
             where: {
                 participants: {
                     some: { userId },
@@ -583,6 +584,9 @@ export const fetchConversationsAction = async (userId: string) => {
                 },
             },
         });
+
+        console.log('DEBUG: fetchConversationsAction results', results);
+        return results;
     } catch (error) {
         console.error('Error fetching conversations:', error);
         return [];

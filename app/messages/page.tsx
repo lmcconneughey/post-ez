@@ -7,8 +7,10 @@ const MessagesHomePage = async () => {
     if (!userId) return [];
 
     const conversations = await fetchConversationsAction(userId);
+    //console.log('Message Page Fetch Multiple Conversations: ', conversations);
+
     if (!conversations) return;
-    return <Messages conversations={conversations} />;
+    return <Messages conversations={conversations} currentUserId={userId} />;
 };
 
 export default MessagesHomePage;
