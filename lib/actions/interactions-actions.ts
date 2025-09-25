@@ -555,3 +555,36 @@ export const sendMessageAction = async (
         console.error('Failed to send message:', error);
     }
 };
+
+export const fetchConversationsAction = async (userId: string) => {
+    try {
+        return await prisma.conversation.findMany({
+            where: {
+                participants: {
+                    some: { userId },
+                },
+            },
+            include: {
+                messages: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                },
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                userName: true,
+                                displayName: true,
+                                img: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching conversations:', error);
+        return [];
+    }
+};
