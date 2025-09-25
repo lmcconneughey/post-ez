@@ -75,7 +75,7 @@ const ConversationPage = async ({ params }: Props) => {
                     </div>
                 </div>
                 {/* Profile Information */}
-                <div className='w-[100px] aspect-square rounded-full overflow-hidden border-4 border-black m-auto '>
+                <div className='w-[100px]   border-4 border-black m-auto '>
                     <ImageComponent
                         path={
                             currentUserData?.img ||
@@ -88,7 +88,7 @@ const ConversationPage = async ({ params }: Props) => {
                         className='rounded-full'
                     />
                 </div>
-                <div className='flex flex-col items-center'>
+                <div className='flex flex-col mt-4 items-center'>
                     <h1 className='font-bold text-textGraylight flex-wrap'>
                         {currentUserData?.displayName}
                     </h1>
