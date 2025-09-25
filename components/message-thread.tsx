@@ -57,25 +57,31 @@ const MessageThread = ({ conversation }: MessageProp) => {
     };
 
     return (
-        <form className=' ' onSubmit={handleSubmit}>
-            {optimisticMessages.map((msg) => (
-                <div
-                    key={msg.id}
-                    className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
-                >
-                    <MessageBubble
-                        message={msg.body}
-                        createdAt={msg.createdAt}
-                        isOwn={msg.senderId === user.id}
-                    />
-                </div>
-            ))}
-            <div className='bg-inputGray  py-2 px-4 flex items-center w-full justify-between gap-4 rounded-full'>
-                <div className='flex items-center gap-4 '>
+        <form
+            className='flex flex-col h-full w-full p-2'
+            onSubmit={handleSubmit}
+        >
+            <div className='flex-grow overflow-y-auto flex flex-col gap-4'>
+                {optimisticMessages.map((msg) => (
+                    <div
+                        key={msg.id}
+                        className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
+                    >
+                        <MessageBubble
+                            message={msg.body}
+                            createdAt={msg.createdAt}
+                            isOwn={msg.senderId === user.id}
+                        />
+                    </div>
+                ))}
+            </div>
+
+            <div className='bg-inputGray py-2 px-4 flex items-center w-full justify-between gap-4 rounded-full border-t border-borderGray'>
+                <div className='flex items-center gap-4 flex-grow'>
                     <ImageIcon
                         width={20}
                         height={20}
-                        className='cursor-pointer text-blue-400 hover:text-blue-300' // Tailwind classes for styling
+                        className='cursor-pointer text-blue-400 hover:text-blue-300'
                         role='icon'
                         aria-label='image icon'
                     />
@@ -94,14 +100,14 @@ const MessageThread = ({ conversation }: MessageProp) => {
                         name='message'
                         type='text'
                         placeholder='Start a new message'
-                        className='bg-transparent text-white outline-none placeholder:text-textGray'
+                        className='bg-transparent text-white outline-none placeholder:text-textGray w-full'
                     />
                 </div>
                 <button type='submit' disabled={!message.trim()}>
                     <SendHorizonal
-                        width={20} // Directly set width to 20px
-                        height={20} // Directly set height to 20px
-                        className='cursor-pointer text-blue-400 hover:text-blue-300' // Tailwind classes for styling
+                        width={20}
+                        height={20}
+                        className='cursor-pointer text-blue-400 hover:text-blue-300'
                         role='button'
                         aria-label='image icon'
                     />

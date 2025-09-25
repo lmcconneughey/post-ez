@@ -1,7 +1,6 @@
 'use client';
 
 import { MessageSquare, MoreHorizontal } from 'lucide-react';
-
 import { useState } from 'react';
 import ComposeMessage from './compose-message';
 import ImageComponent from './image';

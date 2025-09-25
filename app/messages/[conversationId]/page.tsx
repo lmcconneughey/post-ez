@@ -22,7 +22,6 @@ const ConversationPage = async ({ params }: Props) => {
     if (!userId) return;
 
     const conversation = await fetchConversationAction(conversationId);
-    //console.log('TestCreated Convo: ', conversation);
     if (!conversation) return;
 
     const currentUserData = await prisma.user.findFirst({
@@ -40,8 +39,9 @@ const ConversationPage = async ({ params }: Props) => {
     });
 
     return (
-        <div className='flex'>
-            <div className='sm:min-w-[600px]  flex flex-col gap-4 lg:min-w-[400px] border-r h-screen border-borderGray'>
+        <div className='flex h-screen'>
+            {/* Left column for messages list */}
+            <div className='sm:min-w-[600px] flex flex-col gap-4 lg:min-w-[400px] border-r h-screen border-borderGray flex-shrink-0'>
                 <div className='flex gap-4 m-4 justify-between flex-wrap'>
                     <div className=''>
                         <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
@@ -61,7 +61,9 @@ const ConversationPage = async ({ params }: Props) => {
                     currentUserConversations={conversation}
                 />
             </div>
-            <div className='gap-4 w-full relative h-screen'>
+
+            <div className='flex flex-col flex-grow h-screen'>
+                {/* Header for the message thread */}
                 <div className='flex gap-4 m-4 justify-between flex-wrap'>
                     <div className=''>
                         <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
@@ -72,6 +74,7 @@ const ConversationPage = async ({ params }: Props) => {
                         <Info width={20} height={20} />
                     </div>
                 </div>
+                {/* Profile Information */}
                 <div className='w-[100px] aspect-square rounded-full overflow-hidden border-4 border-black m-auto '>
                     <ImageComponent
                         path={
@@ -82,6 +85,7 @@ const ConversationPage = async ({ params }: Props) => {
                         w={100}
                         h={100}
                         tr={true}
+                        className='rounded-full'
                     />
                 </div>
                 <div className='flex flex-col items-center'>
@@ -100,9 +104,8 @@ const ConversationPage = async ({ params }: Props) => {
                         joind {format(currentUserData?.createdAt || '')}
                     </p>
                 </div>
-                <div className='bottom-0 p-2 fixed border-t-borderGray border-t-2'>
-                    <MessageThread conversation={conversation} />
-                </div>
+
+                <MessageThread conversation={conversation} />
             </div>
         </div>
     );
