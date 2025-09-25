@@ -4,6 +4,10 @@ A full-stack social media application for sharing posts and connecting with a co
 
 ## 🚧 Status Update
 
+The **Direct Messaging** feature is currently in active development. Core functionality, including sending and viewing conversations, is now complete.
+
+My current focus is on implementing **real-time updates** with WebSockets. This will allow new messages to instantly appear in the UI for all participants, creating a seamless chat experience.
+
 Edit profile is up! The Edit Profile feature is up! Users can upload an avatar and cover image with crop and zoom. I'll be making improvements to this new feature.
 
 - **Live Site**: [https://movemakersny.com](https://www.google.com/search?q=https://movemakersny.com)
