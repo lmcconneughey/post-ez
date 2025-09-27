@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 type NotificationType = {
     id: string;
     senderUsername: string;
-    type: 'Like' | 'comment' | 'reposts' | 'follow';
+    type: 'Like' | 'comment' | 'reposts' | 'follow' | 'message'; // ADDED 'message' type
     link: string;
 };
 
@@ -30,10 +30,12 @@ const Notification = () => {
             socket.off('getNotification', handleGetNotification);
         };
     }, []);
+
     const reset = () => {
         setNotifications([]);
         setOpen(false);
     };
+
     const handleClick = (notification: NotificationType) => {
         const filteredList = notifications.filter(
             (n) => n.id !== notification.id,
@@ -42,6 +44,24 @@ const Notification = () => {
         setOpen(false);
         router.push(notification.link);
     };
+
+    const getNotificationText = (n: NotificationType) => {
+        switch (n.type) {
+            case 'Like':
+                return 'liked your post';
+            case 'reposts':
+                return 're-posted your post';
+            case 'comment':
+                return 'replied to your post';
+            case 'follow':
+                return 'followed you';
+            case 'message':
+                return 'sent you a message';
+            default:
+                return 'has a new update for you';
+        }
+    };
+
     return (
         <div className='relative'>
             <div
@@ -67,14 +87,7 @@ const Notification = () => {
                             key={n.id}
                             onClick={() => handleClick(n)}
                         >
-                            <b>{n.senderUsername}</b>{' '}
-                            {n.type === 'Like'
-                                ? 'liked your post'
-                                : n.type === 'reposts'
-                                  ? 're-posted your post'
-                                  : n.type === 'comment'
-                                    ? 'replied to your post'
-                                    : 'followed you'}
+                            <b>{n.senderUsername}</b> {getNotificationText(n)}
                         </div>
                     ))}
                     <button
