@@ -106,6 +106,10 @@ const MessageThread = ({ conversation }: MessageProp) => {
             const saved = await sendMessageAction(conversation.id, messageBody);
 
             if (saved && socket) {
+                console.log(
+                    'Client: Successfully saved and broadcasting:',
+                    saved.id,
+                );
                 dispatch({ type: 'replace', payload: saved, tempId: tempId });
 
                 socket.emit('sendMessage', {
