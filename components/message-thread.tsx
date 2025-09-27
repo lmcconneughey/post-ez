@@ -32,14 +32,24 @@ type MessageAction =
     | { type: 'replace'; payload: MessageType; tempId: string }
     | { type: 'receive'; payload: MessageType };
 
+const sortMessagesChronologically = (
+    messages: MessageType[],
+): MessageType[] => {
+    return [...messages].sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+};
+
 const MessageThread = ({ conversation }: MessageProp) => {
     const [message, setMessage] = useState('');
     const { user } = useUser();
 
-    const [stableMessages, setStableMessages] = useState(conversation.messages);
+    const [stableMessages, setStableMessages] = useState(
+        sortMessagesChronologically(conversation.messages),
+    );
 
     useEffect(() => {
-        setStableMessages(conversation.messages);
+        setStableMessages(sortMessagesChronologically(conversation.messages));
     }, [conversation.id, conversation.messages]);
 
     const [optimisticMessages, dispatch] = useOptimistic(
