@@ -74,28 +74,44 @@ const MessageThread = ({ conversation }: MessageProp) => {
         const s = connectSocket();
         setSocket(s);
 
-        if (user?.id) {
-            s.emit('newUser', user.id);
-        }
+        s.on(
+            'receiveMessage',
+            (
+                rawMsg: Omit<MessageType, 'createdAt'> & { createdAt: string },
+            ) => {
+                const msg: MessageType = {
+                    ...rawMsg,
+                    createdAt: new Date(rawMsg.createdAt),
+                };
 
-        s.on('receiveMessage', (msg: MessageType) => {
-            dispatch({ type: 'receive', payload: msg });
+                dispatch({ type: 'receive', payload: msg });
 
-            setStableMessages((prev) => {
-                if (!prev.some((m) => m.id === msg.id)) {
-                    return [...prev, msg];
-                }
-                return prev;
-            });
-        });
-
-        s.emit('joinConversation', conversation.id);
+                setStableMessages((prev) => {
+                    if (!prev.some((m) => m.id === msg.id)) {
+                        return [...prev, msg];
+                    }
+                    return prev;
+                });
+            },
+        );
 
         return () => {
             s.off('receiveMessage');
             s.disconnect();
         };
-    }, [conversation.id, dispatch, user?.id]);
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (!socket || !user?.id) return;
+
+        socket.emit('newUser', user.id);
+
+        socket.emit('joinConversation', conversation.id);
+
+        return () => {
+            socket.emit('leaveConversation', conversation.id);
+        };
+    }, [socket, conversation.id, user?.id]);
 
     useEffect(() => {
         scrollToBottom();
