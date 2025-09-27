@@ -551,7 +551,7 @@ export const sendMessageAction = async (
             },
         });
 
-        revalidatePath('/messages/[conversationId]');
+        //revalidatePath('/messages/[conversationId]');
         return newMessage;
     } catch (error) {
         console.error('Failed to send message:', error);
