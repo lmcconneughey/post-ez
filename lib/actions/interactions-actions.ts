@@ -550,6 +550,7 @@ export const sendMessageAction = async (
                 senderId: true,
             },
         });
+
         revalidatePath('/messages/[conversationId]');
         return newMessage;
     } catch (error) {
