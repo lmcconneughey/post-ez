@@ -35,9 +35,15 @@ type MessageAction =
 const MessageThread = ({ conversation }: MessageProp) => {
     const [message, setMessage] = useState('');
     const { user } = useUser();
-    const [optimisticMessages, dispatch] = useOptimistic(
-        conversation.messages,
 
+    const [stableMessages, setStableMessages] = useState(conversation.messages);
+
+    useEffect(() => {
+        setStableMessages(conversation.messages);
+    }, [conversation.id, conversation.messages]);
+
+    const [optimisticMessages, dispatch] = useOptimistic(
+        stableMessages,
         (state, action: MessageAction) => {
             if (action.type === 'add') {
                 return [...state, action.payload];
@@ -68,8 +74,19 @@ const MessageThread = ({ conversation }: MessageProp) => {
         const s = connectSocket();
         setSocket(s);
 
+        if (user?.id) {
+            s.emit('newUser', user.id);
+        }
+
         s.on('receiveMessage', (msg: MessageType) => {
             dispatch({ type: 'receive', payload: msg });
+
+            setStableMessages((prev) => {
+                if (!prev.some((m) => m.id === msg.id)) {
+                    return [...prev, msg];
+                }
+                return prev;
+            });
         });
 
         s.emit('joinConversation', conversation.id);
@@ -78,7 +95,7 @@ const MessageThread = ({ conversation }: MessageProp) => {
             s.off('receiveMessage');
             s.disconnect();
         };
-    }, [conversation.id, dispatch]);
+    }, [conversation.id, dispatch, user?.id]);
 
     useEffect(() => {
         scrollToBottom();
@@ -100,16 +117,16 @@ const MessageThread = ({ conversation }: MessageProp) => {
         };
 
         dispatch({ type: 'add', payload: tempMessage, tempId: tempId });
-        setMessage(''); // Clear input
+        setMessage('');
 
         try {
             const saved = await sendMessageAction(conversation.id, messageBody);
 
             if (saved && socket) {
-                console.log(
-                    'Client: Successfully saved and broadcasting:',
-                    saved.id,
+                setStableMessages((prev) =>
+                    prev.map((msg) => (msg.id === tempId ? saved : msg)),
                 );
+
                 dispatch({ type: 'replace', payload: saved, tempId: tempId });
 
                 socket.emit('sendMessage', {
@@ -135,7 +152,11 @@ const MessageThread = ({ conversation }: MessageProp) => {
                     >
                         <MessageBubble
                             message={msg.body}
-                            createdAt={msg.createdAt}
+                            createdAt={
+                                msg.createdAt instanceof Date
+                                    ? msg.createdAt
+                                    : new Date(msg.createdAt)
+                            }
                             isOwn={msg.senderId === user.id}
                         />
                     </div>
