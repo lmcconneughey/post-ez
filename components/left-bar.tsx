@@ -12,7 +12,7 @@ import {
     MoreHorizontal,
     ListPlus,
 } from 'lucide-react';
-import Socket from './socket';
+//import Socket from './socket';
 import Notification from './notification';
 import { SignOutButton } from './sign-out';
 import { auth } from '@clerk/nextjs/server';
@@ -166,7 +166,7 @@ const LeftBar = async () => {
                     Post
                 </Link>
             </div>
-            <Socket />
+            {/* <Socket /> */}
             {/* user */}
             <SignOutButton userData={user} />
         </div>
