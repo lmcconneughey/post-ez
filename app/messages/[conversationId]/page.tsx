@@ -41,7 +41,7 @@ const ConversationPage = async ({ params }: Props) => {
     return (
         <div className='flex h-screen'>
             {/* Left column for messages list */}
-            <div className='sm:min-w-[600px] flex flex-col gap-4 lg:min-w-[400px] border-r h-screen border-borderGray flex-shrink-0'>
+            <div className='hidden lg:flex  min-w-[400px] flex-col gap-4  border-r h-screen border-borderGray flex-shrink-0'>
                 <div className='flex gap-4 m-4 justify-between flex-wrap'>
                     <div className=''>
                         <h1 className='text-xl font-bold text-textGraylight flex-wrap'>
